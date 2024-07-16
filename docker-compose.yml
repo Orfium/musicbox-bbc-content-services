@@ -1,0 +1,183 @@
+version: '3.7'
+
+x-common:
+  &x-common
+  image: medialibrary-syncservice
+  build:
+    context: .
+    dockerfile: Dockerfile.Service
+    x-bake:
+      secret:
+        - id=CODEARTIFACT_TOKEN,env=CODEARTIFACT_TOKEN
+  env_file:
+    - .env
+  environment:
+    AppSettings__elasticsearch__url: ${ELASTICSEARCH_URL}
+    AppSettings__NpgConnection: ${NPG_CONNECTION}
+    AppSettings__MetadataApiSettings__Username: ${METADATA_API_USERNAME}
+    AppSettings__MetadataApiSettings__Password: ${METADATA_API_PASSWORD}
+    AppSettings__SMSearchApiSettings__Username: ${SM_SEARCH_API_USERNAME}
+    AppSettings__SMSearchApiSettings__Password: ${SM_SEARCH_API_PASSWORD}
+    AppSettings__MusicApiSettings__Username: ${MUSIC_API_USERNAME}
+    AppSettings__MusicApiSettings__Password: ${MUSIC_API_PASSWORD}
+    AppSettings__SMCoreApiSettings__Username: ${SM_CORE_API_USERNAME}
+    AppSettings__SMCoreApiSettings__Password: ${SM_CORE_API_PASSWORD}
+    AppSettings__PRSSettings__Username: ${PRS_USERNAME}
+    AppSettings__PRSSettings__Password: ${PRS_PASSWORD}
+    AppSettings__AWSS3__AccessKey: ${AWS_S3_ACCESS_KEY}
+    AppSettings__AWSS3__SecretKey: ${AWS_S3_SECRET_KEY}
+    AppSettings__AWSS3_ASSET_HUB__AccessKey: ${AWS_S3_ASSET_HUB_ACCESS_KEY}
+    AppSettings__AWSS3_ASSET_HUB__SecretKey: ${AWS_S3_ASSET_HUB_SECRET_KEY}
+    AppSettings__SigniantConfigs__Username: ${SIGNIANT_CONFIGS_USERNAME}
+    AppSettings__SigniantConfigs__Password: ${SIGNIANT_CONFIGS_PASSWORD}
+    AppSettings__DeliveryDestinationS3Configuration__AccessKey: ${DELIVERY_DESTINATION_S3_ACCESS_KEY}
+    AppSettings__DeliveryDestinationS3Configuration__SecretKey: ${DELIVERY_DESTINATION_S3_SECRET_KEY}
+  
+
+services:
+
+  postgres:
+    image: postgres:14.9
+    restart: unless-stopped
+    container_name: postgres_content_services
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin # pragma: allowlist secret
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=musicbox_content_services_db
+      - DATABASE_URL=postgres://admin:admin@postgres:5432/musicbox_content_services_db # pragma: allowlist secret
+    volumes:
+      - local_slt_postgres_data:/var/lib/postgresql/data
+      - local_slt_postgres_data_backups:/backups
+
+  opensearch:
+    container_name: opensearch
+    image: opensearchproject/opensearch:1.3.0
+    environment:
+      - node.name=opensearch
+      - cluster.name=opensearch-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  ml_uploader_service:
+    <<: *x-common
+    container_name: ml_uploader_service
+    restart: unless-stopped
+    command: "dotnet MusicManager.SyncService.dll"
+    volumes:
+      - ./settings/services-dev/uploader_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    depends_on:
+      - postgres
+      - opensearch
+  ml_track_sync_service:
+    <<: *x-common
+    container_name: ml_track_sync_service
+    restart: unless-stopped
+    command: "dotnet MusicManager.SyncService.dll"
+    image: medialibrary-syncservice
+    volumes:
+     - ./settings/services-dev/track_sync_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+  ml_playout_service:
+    <<: *x-common
+    container_name: ml_playout_service
+    restart: unless-stopped
+    command: "dotnet MusicManager.SyncService.dll"
+    image: medialibrary-syncservice
+    volumes:
+     - ./settings/services-dev/playout_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+  ml_master_ws_sync_service:
+    <<: *x-common
+    container_name: ml_master_ws_sync_service
+    command: "dotnet MusicManager.SyncService.dll"
+    restart: unless-stopped
+    image: medialibrary-syncservice
+    volumes:
+     - ./settings/services-dev/master_ws_sync_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+  ml_workspace_lib_sync_service:
+    <<: *x-common
+    container_name: ml_workspace_lib_sync_service
+    restart: unless-stopped
+    command: "dotnet MusicManager.SyncService.dll"
+    image: medialibrary-syncservice
+    volumes:
+     - ./settings/services-dev/workspace_lib_sync_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+  ml_nighttime_service:
+    <<: *x-common
+    container_name: ml_nighttime_service
+    restart: unless-stopped
+    command: "dotnet MusicManager.SyncService.dll"
+    image: medialibrary-syncservice
+    volumes:
+     - ./settings/services-dev/nighttime_service_appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+  ml_content_api:
+    <<: *x-common
+    container_name: ml_content_api
+    build:
+      context: .
+      dockerfile: Dockerfile.Api
+    command: "dotnet MusicManager.API.dll"
+    restart: unless-stopped
+    image: medialibrary-contentapi
+    ports: 
+      - "5001:5001"
+      - "8000:8000"
+    volumes:
+      - ./settings/contentapi-dev/appsettings.json:/app/appsettings.json
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    
+
+volumes:
+  local_slt_postgres_data:
+  local_slt_postgres_data_backups:

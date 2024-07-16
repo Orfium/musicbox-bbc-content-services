@@ -1,0 +1,86 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.Elasticsearch"
+    ],
+    "Enrich": [
+      "WithThreadId"
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Error",
+        "System": "Warning"
+      }
+    }
+  },
+  "AllowedHosts": "*",
+  "AppSettings": {
+    "AppVersion": "1.43.40",
+    "AppEnvironment": "test",
+    "ServiceId": 5,
+    "NpgConnection": "",
+    "MasterWSId": "d665348b-ec54-4233-aae7-97fde1361d0a",    
+    "MetadataApiSettings": {
+      "API_Endpoint": "https://api.soundmouse.com/metadata/v1/"
+    },
+    "MusicApiSettings": {
+      "API_Endpoint": "https://api.soundmouse.com/music/v2/"
+    },
+    "SMCoreApiSettings": {
+      "API_Endpoint": "https://api.core.soundmouse.net/"
+    },
+    "elasticsearch": {
+      "track_index": "track-ml-dev-test-n2eu7wcxhyhmoj0fxgsf",
+      "album_index": "album-ml-dev-test-n2eu7wcxhyhmoj0fxgsf",
+      "service_log_index": "medialibrary-service-log-test"
+    },
+    "AWSS3": {
+      "BucketName": "bbc-ml-upload",
+      "FolderName": "Test",
+      "Reagion": "eu-west-1",
+      "BucketUrl": "https://bbc-ml-upload.s3.eu-west-1.amazonaws.com",
+      "TokenKey": "123", 
+      "TokenName": "udyoga@adelanka.com"
+    },
+    "AWSS3_ASSET_HUB": {
+      "BucketName": "",
+      "FolderName": "",
+      "BucketUrl": "",
+      "TokenKey": "",
+      "TokenName": "",
+      "ServiceUrl": "https://s3.eu-west-1.amazonaws.com"
+    },
+    "SigniantConfigs": {
+      "FlightStorageConfigId": "m1sVwcSLs",
+      "TargetAgent": "W1_Soundmouse_Agents!9",
+      "SimpleFileLocatorPath": "file://bfgshuttle.bbc.co.uk/C:/temp/",
+      "TransferTemplate": "soundmouse_test_flight",
+      "JobGroup": "Soundmouse_Test",
+      "ServiceBaseUrl": "http://bfgshuttle.bbc.co.uk",
+      "ReplyBaseUrl": "https://soundmouse.net/admintools/api-ml-test",
+      "DeliveryDestinationBucket": "bbc-playout-delivery"
+    },
+    "DeliveryDestinationS3Configuration": {
+      "ServiceUrl": "",
+      "DefaultBucket": "bbc-playout-delivery"
+    },
+    "ChartApiSettings": {
+      "MasterTracks": "http://192.168.10.31:5010/api/MLAPI/GetChartTracks",
+      "MasterAlbums": "http://192.168.10.31:5010/api/MLAPI/GetChartAlbums"
+    },
+    "ServiceScheduleTimes": {
+      "TakeDownStartHour": 18,
+      "TakeDownEndhour": 18,
+      "PRSSearchStartHour": 18,
+      "PRSSearchEndtHour": 18
+    }
+  }
+}

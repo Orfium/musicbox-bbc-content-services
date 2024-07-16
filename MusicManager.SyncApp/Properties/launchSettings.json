@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MusicManager.SyncApp": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

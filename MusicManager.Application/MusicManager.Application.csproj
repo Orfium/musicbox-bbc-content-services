@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MusicManager.Core\MusicManager.Core.csproj" />
+    <ProjectReference Include="..\MusicManager.PrsSearch\MusicManager.PrsSearch.csproj" />
+  </ItemGroup>
+
+</Project>

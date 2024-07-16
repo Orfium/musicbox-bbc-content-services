@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+echo "configure-nuget script running..."
+
+if [ -f /run/secrets/CODEARTIFACT_TOKEN ]; then
+   CODEARTIFACT_TOKEN=$(cat /run/secrets/CODEARTIFACT_TOKEN)
+   dotnet nuget remove source musicbox/mbmt-nuget || true
+   dotnet nuget add source https://musicbox-462711359312.d.codeartifact.eu-west-2.amazonaws.com/nuget/mbmt-nuget/v3/index.json --name musicbox/mbmt-nuget --password $CODEARTIFACT_TOKEN --username aws --store-password-in-clear-text
+   echo "CODEARTIFACT_TOKEN has been configured"
+else
+   echo "CODEARTIFACT_TOKEN not found"
+fi

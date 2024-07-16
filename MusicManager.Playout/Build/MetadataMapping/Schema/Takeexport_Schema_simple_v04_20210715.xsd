@@ -1,0 +1,1339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:vcs="http://ExternalFunctions.vcs.de" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--Schema for Metadatafiles for Take related Export and import by dira!Connect. AEP Context-->
+	<!-- Version tailored for music import by Jasred Thomas 2020-11-12-->
+	<!-- v02 20210715: GENE_MREPORT_STATUS and GENE_MUSIC_CODE are now mandatory, more notes added on relational Persons model, notes on GENE_PERFORMERS and GENE_COMPOSERS added -->
+	<xs:element name="EXPORT">
+		<xs:annotation>
+			<xs:documentation>The root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="IMEX_ID" type="xs:string" nillable="false" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>IMEX_ID is not a metadate of the exported take, but of the export process</xs:documentation>
+						<xs:documentation>Export_AEP.xsl in current Version (18.02.2013 does not provide this date, so alwaysOccurs="0"</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="TAKE"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TAKE">
+		<xs:annotation>
+			<xs:documentation>container for each take being exported normally only one take par file.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="GENERIC"/>
+				<xs:element ref="TAKE_PERSONS"/>
+				<xs:element ref="BASIC_TEXT" minOccurs="0"/>
+				<xs:element ref="AUDIO_MARKERS" minOccurs="0"/>
+				<xs:element ref="GENEALOGY" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="AUDIO_MARKERSType">
+		<xs:sequence>
+			<xs:element ref="AUDIO_MARKER" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="AUDIO_MARKERType">
+		<xs:sequence>
+			<xs:element name="AMA_FUNCTION" type="xs:string"/>
+			<xs:element name="AMA_MARK_IN" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_MARK_OUT" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_FADE_IN" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_FADE_OUT" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_INTRO1" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_INTRO2" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_INTRO3" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_OUTRO1" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_OUTRO2" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_OUTRO3" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_PREV_LINK" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_NEXT_LINK" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_REFRAIN1" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_REFRAIN2" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_REFRAIN3" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_LAST_MOD_USER" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_FADE_CURVE1" type="xs:string" minOccurs="0"/>
+			<xs:element name="AMA_FADE_CURVE2" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BTXType">
+		<xs:annotation>
+			<xs:documentation>type for the collection of standard text objects.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="BTX_REMARK" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_MOD_BEGIN" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_MOD_END" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_INFOTEXT" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_DIRECTION" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_ABSTRACT" type="xs:string" nillable="true"/>
+			<xs:element name="BTX_META_CONTAINER_MISC" type="xs:string" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CLIPType">
+		<xs:annotation>
+			<xs:documentation>ClipMetadata appear in the same substructure as TakeMetadata</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="CLIP_INFO" minOccurs="0"/>
+			<!--xs:element ref="METADATA_CONTAINER" minOccurs="0"/-->
+			<xs:element ref="CLIP_PERSONS" minOccurs="0"/>
+			<xs:element ref="CLIP_ATTACHMENT" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GENEALOGY_ITEMType">
+		<xs:sequence>
+			<xs:element name="GENY_CREA_TIME" type="xs:string"/>
+			<xs:element name="GENY_LAST_MOD_TIME" type="xs:string"/>
+			<xs:element name="GENY_ID" type="xs:string"/>
+			<xs:element name="GENY_TAKE_ID" type="xs:string"/>
+			<xs:element name="GENY_BASIC_TYPE" type="xs:string"/>
+			<xs:element name="GENY_MREPORT_STATUS" type="xs:string"/>
+			<xs:element name="GENY_TAKE_START_OFFSET" type="xs:string"/>
+			<xs:element name="GENY_CLIP_LENGTH" type="xs:string"/>
+			<xs:element name="GENY_CLIP_START_OFFSET" type="xs:string"/>
+			<xs:element name="GENY_CLIP_TARGET_LENGTH" type="xs:string"/>
+			<xs:element name="GENY_LAST_MOD_USER" type="xs:string"/>
+			<xs:element name="GENY_CLIP_TITLE" type="xs:string"/>
+			<xs:element name="GENY_CLIP_PERSON" type="xs:string"/>
+			<xs:element name="GENY_CLIP_PERFORMER" type="xs:string"/>
+			<xs:element name="GENY_EXT_REFERENCE" type="xs:string"/>
+			<xs:element name="GENY_SID" type="xs:string"/>
+			<xs:element name="GENY_CLIP_SYS_ID" type="xs:string"/>
+			<xs:element name="GENY_CLIP_MED_ID" type="xs:string"/>
+			<xs:element name="GENY_CLIP_ORG_ID" type="xs:string"/>
+			<xs:choice>
+				<xs:annotation>
+					<xs:documentation>note: either METADATA_CONTAINER or CLIP  may exist per GENEALOGY_ITEM</xs:documentation>
+				</xs:annotation>
+				<xs:element ref="CLIP" minOccurs="0"/>
+				<xs:element ref="METADATA_CONTAINER" minOccurs="0"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GENERICType">
+		<xs:sequence>
+			<xs:element name="GENE_CREA_TIME" type="xs:dateTime" nillable="false"/>
+			<xs:element name="GENE_LAST_MOD_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_ROW_CREA_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_ROW_MOD_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_DEL_TIME" type="xs:dateTime" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the datetime set for auto deletion.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_REC_TIME" type="xs:dateTime" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the time the recording was made</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_VALID_START" type="xs:dateTime" nillable="true" minOccurs="0"/>
+			<xs:element name="GENE_VALID_END" type="xs:dateTime" nillable="true" minOccurs="0"/>
+			<xs:element name="GENE_DUE_DATE" type="xs:dateTime" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the date time by which delivery of audio is expected (EXTA/White DIGA)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_FIRST_BRC_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_LAST_BRC_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_PROD_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_PUB_TIME" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_PLANNED_SCHED_TIME" type="xs:dateTime" nillable="false"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the datetime of the next scheduled playout</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_FT_REFNO_DATE" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_REG_DATE" type="xs:dateTime" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_MEDIA_EDIT_DATE" type="xs:dateTime" nillable="false"
+				minOccurs="0"/>
+			<xs:element name="GENE_ID" type="xs:string" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Take ID - this must be present on an export but can be absent on an import, as it will be generated by the importing dira workgroup.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_CREA_USER_ID" type="xs:string" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_LAST_MOD_USER_ID" type="xs:string" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_ROW_MOD_USER_ID" type="xs:string" nillable="false" minOccurs="0"/>
+			<xs:element name="GENE_DIRA_ARCHIVE00" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DIRA_ARCHIVE01" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DIRA_ARCHIVE02" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DIRA_ARCHIVE03" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DIRA_ARCHIVE04" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ASSET_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ALBUM_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_UDT_ID" type="xs:string" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Take data card layout ID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="UDT_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Take data card layout name</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_WORK_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Not used currently, but could be used for ISWC</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_PARENT_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SCHED_STRUCT_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PROG_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ROW_STATUS" nillable="false" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="ROW_STATUS$VALID#Valid"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_TYPE" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The type of asset. for Music tracks set to TYPE$MUSIC and for classical music items, set it to TYPE$CLASSIC.
+</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="TYPE$GENERIC"/>
+						<xs:enumeration value="TYPE$WORD"/>
+						<xs:enumeration value="TYPE$MUSIC"/>
+						<xs:enumeration value="TYPE$PROGRAMME"/>
+						<xs:enumeration value="TYPE$VIDEO"/>
+						<xs:enumeration value="TYPE$CLASSIC"/-->
+						<xs:enumeration value="TYPE$WORD#Word"/>
+						<xs:enumeration value="TYPE$MUSIC#Music"/>
+						<xs:enumeration value="TYPE$CLASSIC#Classic"/>
+						<xs:enumeration value="TYPE$GENERIC#Generic"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_WORK_STATUS" minOccurs="0" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="WORK_STATUS$TO BE EDITED#To Be Edited"/>
+						<xs:enumeration value="WORK_STATUS$BOOKING#Booking"/>
+						<xs:enumeration value="WORK_STATUS$NOT FOR TX#Not For TX"/>
+						<xs:enumeration
+							value="WORK_STATUS$READY FOR TRANSMISSION#Ready for Transmission"/>
+						<xs:enumeration value="WORK_STATUS$CONFIRMATION#Confirmation"/>
+						<xs:enumeration value="WORK_STATUS$IN PROGRESS#In Progress"/>
+						<xs:enumeration value="WORK_STATUS$RAW MATERIAL#Raw Material"/>
+						<xs:enumeration value="WORK_STATUS$READY TO MIX#Ready To Mix"/>
+						<xs:enumeration value="WORK_STATUS$MIX COMPLETED#Mix Completed"/>
+						<xs:enumeration value="WORK_STATUS$RIGHTS_FREE#Rights Free"/>
+						<xs:enumeration value="WORK_STATUS$TEMP EDITS MADE#Temp Edits Made"/>
+						<xs:enumeration value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_LOGSTORE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>this list is system specific and not generic for all AEP systems. Until further notice, this field is ignored, and AM_RADIO4_R4WIP for import is used by default</xs:documentation>
+					<xs:documentation>for export it's not predictable from which logstore the according take be exported, so an according enumeration may be included system specific</xs:documentation>
+				</xs:annotation>
+				<!--xs:simpleType>
+	
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="LOGSTORE$AM_RADIO4_R4WIP"/>
+				</xs:restriction>
+			</xs:simpleType-->
+			</xs:element>
+			<xs:element name="GENE_PROC_STATE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_FORM_CLASS" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="FORM_CLASS$JINGLE"/>
+					<xs:enumeration value="FORM_CLASS$NEWS"/>
+					<xs:enumeration value="FORM_CLASS$SPORT"/>
+					<xs:enumeration value="FORM_CLASS$OTHER"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_LANGUAGE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PROD_TYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PLAY_BEGIN" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PLAY_END" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="PLAY_END$FADE#Fade"/>
+						<xs:enumeration value="PLAY_END$COLD#Cold"/>
+						<xs:enumeration value="PLAY_END$QUICK#Quick"/>
+						<xs:enumeration value="PLAY_END$APPLAUSE#Applause"/>
+						<xs:enumeration value="PLAY_END$WARNING#Warning"/>
+						<xs:enumeration value="PLAY_END$NO ENTRY#No Entry"/>
+						<xs:enumeration value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PLAY_MODE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="PLAY_MODE$STOP_ALL"/--> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_ROYALTIES_TYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="ROYALTIES_TYPE$YES"/>
+						<xs:enumeration value="ROYALTIES_TYPE$NO"/>
+						<xs:enumeration value="ROYALTIES_TYPE$50"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_BRC_RESTRICTION" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_RESSORT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MREPORT_STATUS" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>The status of the Music reporting metadata. if you can supply Performers, Composers, arrangers, Label, Publisher, ISRC code, and prefferably Album, Track no, and Catalogue Number then this can be set to "MREPORT_STATUS$READY_TO_REPORT", otherwise default to "MREPORT_STATUS$DETAILS_MISSING"</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="MREPORT_STATUS$DETAILS_MISSING#Details Missing"/>
+						<xs:enumeration value="MREPORT_STATUS$READY_TO_REPORT#Ready to Report"/>
+						<xs:enumeration value="MREPORT_STATUS$NOT_ REP#Not to be Reported"/>
+						<xs:enumeration value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_DIGI_SOURCE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"/>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_BRC_CATEGORY" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_POOL" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_FUNCTION" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_NETWORK" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_SRC_SITE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_DEPARTMENT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SCHED_TYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="SCHED_TYPE$DEFAULT"/>
+						<xs:enumeration value="SCHED_TYPE$EXTA"/>
+						<xs:enumeration value="SCHED_TYPE$DIGA"/>
+						<xs:enumeration value="SCHED_TYPE$MODF"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PRG_TYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PRG_CONTENT" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_REC_STATUS" minOccurs="0" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="REC_STATUS$WAITING#Waiting"/>
+						<xs:enumeration value="REC_STATUS$RECORDING#Recording"/>
+						<xs:enumeration value="REC_STATUS$COMPLETED#Completed"/>
+						<xs:enumeration value="REC_STATUS$ABORTED#Aborted"/>
+						<xs:enumeration value="REC_STATUS$EMPTY#Empty"/>
+						<xs:enumeration value="REC_STATUS$AUTORECORDING#Autorecording"/>
+						<xs:enumeration value="REC_STATUS$RESTARTED#Restarted"/>
+						<xs:enumeration value="REC_STATUS$COPIED#Copied"/>
+						<xs:minLength value="0"/>
+						<xs:enumeration value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_OUT_DEVICE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="OUT_DEVICE$MUSIC#Music"/>
+						<xs:enumeration value="OUT_DEVICE$WORD#Word"/>
+						<xs:enumeration value=""/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_CONTENT_TYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string"> </xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_START_MODE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="SE_START_MODE$MANU"/>
+						<xs:enumeration value="SE_START_MODE$AUTO"/>
+						<xs:enumeration value="SE_START_MODE$TIME"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_STOP_MODE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="SE_STOP_MODE$MANU"/>
+						<xs:enumeration value="SE_STOP_MODE$AUTO"/>
+						<xs:enumeration value="SE_STOP_MODE$TIME"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_ARCH_STATE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="ARCH_STATE$TO_RIA"/>
+						<xs:enumeration value="ARCH_STATE$TO_DMI"/>
+						<xs:enumeration value="ARCH_STATE$IN_RIA"/>
+						<xs:enumeration value="ARCH_STATE$IN_DMI"/>
+						<xs:enumeration value="ARCH_STATE$REFUSED"/>
+						<xs:enumeration value="ARCH_STATE$NULL"/>
+						<xs:enumeration value="ARCH_STATE$NOARCHIVE"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_MUSIC_CODE" minOccurs="1">
+				<xs:annotation>
+					<xs:documentation>This is the licence code - the code that tells BBC systems which rights are assoceated with the track it is mandatory, and for Commercial music it should be set to "MUSIC_CODE$C#C-Commercial" and for Library material it shoul be set to "MUSIC_CODE$M#M - Library Music"</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="MUSIC_CODE$C#C - Commercial"/>
+						<xs:enumeration value="MUSIC_CODE$A#A - BBC Sound Archives"/>
+						<xs:enumeration value="MUSIC_CODE$H#H - R.phonic W.shop"/>
+						<xs:enumeration value="MUSIC_CODE$K#K - Com. +50 yrs old"/>
+						<xs:enumeration value="MUSIC_CODE$M#M - Library Music"/>
+						<xs:enumeration value="MUSIC_CODE$N#N - Private Tapes"/>
+						<xs:enumeration value="MUSIC_CODE$R#R - Live Rec/Session"/>
+						<xs:enumeration value="MUSIC_CODE$T#T - Soundtrack Tape"/>
+						<xs:enumeration value="MUSIC_CODE$U#U - Stock Music/Foreign Tape (eg EBU)"/>
+						<xs:enumeration value="MUSIC_CODE$X#X - Spec. Composed"/>
+						<xs:enumeration value="MUSIC_CODE$Z#Z - Not to be reported"/>
+						<xs:enumeration
+							value="MUSIC_CODE$2#2 - 2nd or further use of 'R' within 28 days of B'cast"/>
+						<xs:enumeration value="MUSIC_CODE$L#L - TX Live"/>
+						<xs:enumeration value="MUSIC_CODE$CD#CD - Dubbed Commercial"/>
+						<xs:enumeration value="MUSIC_CODE$KD#KD - Dubbed Com. +50 yrs old"/>
+						<xs:enumeration value="MUSIC_CODE$MD#MD - Dubbed Library Music"/>
+						<xs:enumeration value="MUSIC_CODE$AD#AD - Dubbed BBC Sound Archives"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_CONTENT_SUBTYPE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="CONTENT_SUBTYPE$COMEDY"/>
+						<xs:enumeration value="CONTENT_SUBTYPE$DRAMATIC"/>
+						<xs:enumeration value="CONTENT_SUBTYPE$FOLK"/>
+						<xs:enumeration value="CONTENT_SUBTYPE$SACRED"/>
+						<xs:enumeration value="CONTENT_SUBTYPE$SECULAR"/>
+						<xs:enumeration value="CONTENT_SUBTYPE$VOCAL"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_VERSION_STATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>not used in AEP context</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_TRGT_SITE" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="SITE$W1_A_M_R1_1X"/>
+						<xs:enumeration value="SITE$W1_A_M_R2_6M"/>
+						<xs:enumeration value="SITE$W1_A_M_R3_EUROCLASSIC"/>
+						<xs:enumeration value="SITE$W1_A_M_R4_R7"/>
+						<xs:enumeration value="SITE$W1_A_M_PRODUCTION"/>
+						<xs:enumeration value="SITE$W1_RADIO_NEWS"/>
+						<xs:enumeration value="SITE$MB_RADIO_NEWS"/>
+						<xs:enumeration value="SITE$W1_WS_WG1"/>
+						<xs:enumeration value="SITE$W1_WS_WG2"/>
+						<xs:enumeration value="SITE$W1_WS_WG3"/>
+						<xs:enumeration value="SITE$W1_NEWS_ARCHIVE"/>
+						<xs:enumeration value="SITE$W1_BBC_LDN"/>
+						<xs:enumeration value="SITE$W1_VAL"/>
+						<xs:enumeration value="SITE$W1_TRAINING"/>
+						<xs:enumeration value="SITE$W1_TEST"/>
+						<xs:enumeration value="SITE$SA_TRAINING"/>
+						<xs:enumeration value="SITE$SA_A_M"/>
+						<xs:enumeration value="SITE$SA_5LIVE"/>
+						<xs:enumeration value="SITE$SA_R_MR"/>
+						<xs:enumeration value="SITE$SA_VAL"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_PERF_TYPE" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>not used in Radio4 context</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="PERF_TYPE$BALLET"/>
+						<xs:enumeration value="PERF_TYPE$CANTATA"/>
+						<xs:enumeration value="PERF_TYPE$CHANT"/>
+						<xs:enumeration value="PERF_TYPE$CHORALE"/>
+						<xs:enumeration value="PERF_TYPE$CONCERTO"/>
+						<xs:enumeration value="PERF_TYPE$DANCE"/>
+						<xs:enumeration value="PERF_TYPE$DUET"/>
+						<xs:enumeration value="PERF_TYPE$ETUDE"/>
+						<xs:enumeration value="PERF_TYPE$FANTASIA"/>
+						<xs:enumeration value="PERF_TYPE$FUGUE"/>
+						<xs:enumeration value="PERF_TYPE$MASS"/>
+						<xs:enumeration value="PERF_TYPE$MUSICAL THEATRE"/>
+						<xs:enumeration value="PERF_TYPE$OPERA"/>
+						<xs:enumeration value="PERF_TYPE$OPERATTA"/>
+						<xs:enumeration value="PERF_TYPE$ORATORIA"/>
+						<xs:enumeration value="PERF_TYPE$PRELUDE"/>
+						<xs:enumeration value="PERF_TYPE$REQUIEM"/>
+						<xs:enumeration value="PERF_TYPE$RHAPSODY"/>
+						<xs:enumeration value="PERF_TYPE$SONATA"/>
+						<xs:enumeration value="PERF_TYPE$SONG"/>
+						<xs:enumeration value="PERF_TYPE$SUITE"/>
+						<xs:enumeration value="PERF_TYPE$SYMPHONIC POEM"/>
+						<xs:enumeration value="PERF_TYPE$SYMPHONY"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_REC_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>not used in AEP context</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_EPOCH" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>not used in Radio4 context</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_USR_CAT0" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="USR_CAT0$GNSTX"/>
+						<xs:enumeration value="USR_CAT0$MBGNSTX"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_USR_CAT1" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_USR_CAT2" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<!--xs:enumeration value="USR_CAT2$DUPLICATE"/>
+						<xs:enumeration value="USR_CAT2$LIMITED USES"/>
+						<xs:enumeration value="USR_CAT2$RAW MATERIAL"/>
+						<xs:enumeration value="USR_CAT2$SINGLE USE ONLY"/>
+						<xs:enumeration value="USR_CAT2$3 USES ONLY"/>
+						<xs:enumeration value="USR_CAT2$2_USES ONLY"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="GENE_EXT_SYS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>External System Name. The external system's Identifier is stored in GENE_CATALOG_DB0. the take could gave come from the external system or copied to the external system.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_POP_SCALE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_AUDIO_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_VIDEO_LENGTH" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MAINTEXT_SIZE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MOD_BEGIN_SIZE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MOD_END_SIZE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TXT_READ_LENGTH" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PLAN_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_AUDIO_PLAY_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_VIDEO_PLAY_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_STORY_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_USER_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_LENGTH" type="xs:integer" minOccurs="0"/>
+			<xs:element name="GENE_REC_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ACC_RIGHT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MOD_RIGHT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DEL_RIGHT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MARK_RIGHT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_LAST_MOD_USER" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CREA_USER" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ROW_MOD_USER" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TITLE" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The title of the Asset</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_BRC_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SUB_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ALBUM" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TITLE_INFO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MULTIMEDIA_TITLE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The public facing title, use when the title has swearwords or is otherwise not suitable for puiblic display</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_WORK_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_NATIVE_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SERIES_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MULTIMEDIA2" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TITLE_EXT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_AUTHORS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PERFORMERS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is NOT the place where Performers data is written to or read from because there is no role info. this field is for internal dira use only - it is used in some internal list views. The field is made up from all the pperformer PERSON_NAME fields concatenated with a "/" separator.
+However it is useful to populate it for imports.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_COMPOSERS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is NOT the place where Composers data is written to or read from because there is no role info. this field is for internal dira use only - it is used in some internal list views. The field is made up from all the pperformer PERSON_NAME fields concatenated with a "/" separator.
+However it is useful to populate it for imports.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_EDITOR" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ORG_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CONTRIBUTORS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PRODUCER" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_JOURNALISTS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SHORT_TITLE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_BRC_PERSON" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_LABEL" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the Name of the record Label</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_LABEL_CODES" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PUBLISHER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Music Publisher (owns rights to the work)
+</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_TRACK" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Track Number on Product</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_ISRC" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The ISRC number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_ORDER_NO" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The music Catalogue number</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_EAN" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Product IPC/EAN barcode value</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_SIDE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_LABEL_CODE2" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TEXT_PUBLISHER" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_EPISODE_NO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_END_OF_SPEECH" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_THEME" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_EXT_LANGUAGE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ARCHIVE00" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ARCHIVE01" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>BBC Music Reference</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_ARCHIVE02" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ARCHIVE03" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The Music Rotation Identifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_ARCHIVE04" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CATALOG_DB0" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>the Identifier associated with the external system in GENE_EXT_SYS.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_CATALOG_DB1" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Musicbrainz Recording iderntifier</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_CATALOG_DB2" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CENTRAL_ARCHIVE00" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CENTRAL_ARCHIVE01" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_PROD_NO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_REC_PLACE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If a concert track this was the event it was played at</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_COST_UNIT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ROYALTIES" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_GRANT_ROYALTIES" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_REC_VENUE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If a concert track this is the venue that the concert was held at.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_BRC_RIGHTS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_EVENT_GROUP" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If the track was from a concert and the concert was part of a bigger event, this is the name of the bigger event.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_REC_NO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_LS_HIERARCHY" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ROT_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ROT_CATEGORIES" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_GBL_RELEASE_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_DISC_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>not used, could be Muiscbtainzdisc ID or Freedb disc ID</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_FT_REFNO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MPN_REFNO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SRC_ORG" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_EBU_REFNO" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ARRANGER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Do NOT add Arranger info here (or read from it either) it's for internal dira use only.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_IN_WORDS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_OUT_WORDS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_RECIPIENT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_REMARK" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_COST_CENTRE" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_LOCATION" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_INFORMAT" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MEDIA_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_AUDIO_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TEXT_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_TAKE_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_VIDEO_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SCHED_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_MCODE_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_CONTAINER_FLAGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_SYS_GENY_ID" type="xs:string" nillable="false" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Will be present in exports. first 32 characters are a GUID, last 8 characters are a workgroup identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_PRED_GENY_ID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_ORG_GENY_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Will be present in exports. first 32 characters are a GUID, last 8 characters are a workgroup identifier.
+can be present in imports, but workgroup identifier needs to be defined for external system - if povided by the Music library, the external system identifier needs to be agreed with CGI. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENE_PROD_UUID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_REC_UUID" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_VIDEO_TC_LENGTH" type="xs:string" minOccurs="0"/>
+			<xs:element name="GENE_VIDEO_TC_PLAY_LENGTH" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MULTIMEDIAType">
+		<xs:sequence>
+			<xs:element name="MEDIA_TITLE" type="xs:string"/>
+			<xs:element name="MEDIA_AUTHOR" type="xs:string"/>
+			<xs:element name="MEDIA_CONTENT" type="xs:string"/>
+			<xs:element name="MEDIA_EXT_FILENAME" type="xs:string"/>
+			<xs:element name="MEDIA_FILENAME" type="xs:string"/>
+			<xs:element name="MEDIA_ID" type="xs:string"/>
+			<xs:element name="MEDIA_CTRL_FLAGS" type="xs:string"/>
+			<xs:element name="MEDIA_FUNCTION" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value=""/>
+						<!--xs:enumeration value="MEDIA_FUNCTION$ORIGINAL"/>
+						<xs:enumeration value="MEDIA_FUNCTION$MULTIMEDIA"/>
+						<xs:enumeration value="MEDIA_FUNCTION$SADIE_PROJECT"/>
+						<xs:enumeration value="MEDIA_FUNCTION$SEQUOIA_PROJECT"/>
+						<xs:enumeration value="MEDIA_FUNCTION$MULTIMEDIA_EXTERNAL"/>
+						<xs:enumeration value="MEDIA_FUNCTION$ATTACHMENT"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MEDIA_SUBFUNC" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value=""/>
+						<!--xs:enumeration value="MEDIA_SUBFUNC$BACKCOVER"/>
+						<xs:enumeration value="MEDIA_SUBFUNC$BOOKLET"/>
+						<xs:enumeration value="MEDIA_SUBFUNC$FRONTCOVER"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MEDIA_VARIANT" minOccurs="0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value=""/>
+						<!--xs:enumeration value="MEDIA_VARIANT$SMALL"/>
+						<xs:enumeration value="MEDIA_VARIANT$MEDIUM"/>
+						<xs:enumeration value="MEDIA_VARIANT$LARGE"/-->
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="MEDIA_PUBLISHER" type="xs:string"/>
+			<xs:element name="MEDIA_FILE_SIZE" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PERSONType">
+		<xs:sequence>
+			<xs:element ref="PERSON_NAME"/>
+			<xs:element name="PERSON_INFO" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_CONTACT" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_NAME_NATIVE" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_LIFETIME_TXT" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_EXT_REF00" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_ALT_NAME" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_CATALOGS" type="xs:string" minOccurs="0"/>
+			<xs:element name="PERSON_ABSTRACT" type="xs:string" minOccurs="0"/>
+			<xs:element name="PMAP_PART" type="xs:string" minOccurs="0"/>
+			<xs:element ref="PMAP_ORD_NO">
+				<xs:annotation>
+					<xs:documentation>The order of precedence of the person/organisation. NOTE there are SEPERATE sequences for Preformers, Originators, and contributors.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PMAP_INFO" type="xs:string" minOccurs="0"/>
+			<xs:element ref="PMAP_FUNC"/>
+			<xs:element ref="PMAP_SUBFUNC"/>
+			<!--One set of Metadata per Person entry as in TakeDataCard is exported-->
+			<!--E.G. One Set for Lennon, John: Performer, one for Lennon, John: Composer, a.s.o.-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="PERSON_NAME" type="xs:string"/>
+	<xs:element name="PMAP_ORD_NO" type="xs:integer"/>
+	<xs:element name="PMAP_FUNC">
+		<xs:annotation>
+			<xs:documentation>If the track is classical, then the value of PMAP_FUNC for performer is "PERSON_FUNC$CLASSIC_PERFORMER#Classic Performer".
+for pop tracks it is "PERSON_FUNC$PERFPRMER#Main Atrist"</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="PERSON_FUNC$PERFORMER#Main Artist"/>
+				<xs:enumeration value="PERSON_FUNC$ORIGINATOR#Originator"/>
+				<xs:enumeration value="PERSON_FUNC$CONTRIBUTOR#Contributor"/>
+				<xs:enumeration value="PERSON_FUNC$CLASSIC_PERFORMER#Classic Performer"/>
+				<xs:enumeration value="PERSON_FUNC$WORD_PERFORMER#Word Performer"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="PMAP_SUBFUNC">
+		<xs:annotation>
+			<xs:documentation>Please see comments in the enumerations for a guide to the hierarchy with respect to PMAP_FUNC.</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<!--Pop PERFORMER roles when PMAP_FUNC is PERFORMER-->
+				<xs:enumeration value="PERSON_FUNC$PERFORMER#Main Artist"/>
+				<xs:enumeration value="PERSON_FUNC$FEATURED_ARTIST#Featured Artist"/>
+				<xs:enumeration value="PERSON_FUNC$DJ#DJ"/>
+				<xs:enumeration value="PERSON_FUNC$GUEST_ARTIST#Guest Artist"/>
+				<xs:enumeration value="PERSON_FUNC$MC#MC"/>
+				<xs:enumeration value="PERSON_FUNC$SUPPORTING_ARTIST#Supporting Artist"/>
+				<xs:enumeration value="PERSON_FUNC$VS_ARTIST#Versus Artist"/>
+				<xs:enumeration value="PERSON_FUNC$REMIX_ARTIST#Remix Artist"/>
+				<!--ORIGINATOR Roles When PMAP_FUNC is ORIGINATOR-->
+				<xs:enumeration value="PERSON_FUNC$COMPOSER#Composer"/>
+				<xs:enumeration value="PERSON_FUNC$ARRANGER#Arranger"/>
+				<xs:enumeration value="PERSON_FUNC$ORIGINAL_ARTIST#Original Artist"/>
+				<xs:enumeration value="PERSON_FUNC$LIBRETTIST#Librettist"/>
+				<xs:enumeration value="PERSON_FUNC$LYRICIST#Lyricist"/>
+				<xs:enumeration value="PERSON_FUNC$ORCHESTRATOR#Orchestrator"/>
+				<!--clasical performerroles when PMAP_FUNC is CLASSIC_PERFORMER-->
+				<xs:enumeration value="PERSON_FUNC$SOLOIST#Soloist"/>
+				<xs:enumeration value="PERSON_FUNC$CLASSIC_PERFORMER#Classic Performer"/>
+				<xs:enumeration value="PERSON_FUNC$CONDUCTOR#Conductor"/>
+				<xs:enumeration value="PERSON_FUNC$ENSEMBLE#Ensemble"/>
+				<xs:enumeration value="PERSON_FUNC$GROUP#Group"/>
+				<xs:enumeration value="PERSON_FUNC$ORCHESTRA#Orchestra"/>
+				<xs:enumeration value="PERSON_FUNC$QUARTET#Quartet"/>
+				<xs:enumeration value="PERSON_FUNC$QUINTET#Quintet"/>
+				<xs:enumeration value="PERSON_FUNC$SINGER#Singer"/>
+				<!-- word performer roles when PMAP_FUNC is WORD_PERFORMER-->
+				<xs:enumeration value="PERSON_FUNC$PRESENTER#Presenter"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_CONTRIBUTOR#Contributor"/>
+				<xs:enumeration value="PERSON_FUNC$STUDIO_GUEST#Studio Guest"/>
+				<xs:enumeration value="PERSON_FUNC$REPORTER#Reporter"/>
+				<xs:enumeration value="PERSON_FUNC$ACTOR#Actor"/>
+				<!--when PMAP_FUNC is CONTRIBUTOR-->
+				<xs:enumeration value="PERSON_FUNC$ENGINEER#Engineer"/>
+				<xs:enumeration value="PERSON_FUNC$PRODUCER#Music Producer"/>
+				<xs:enumeration value="PERSON_FUNC$PROMOTER#Promoter"/>
+				<xs:enumeration value="PERSON_FUNC$MANAGER#Manager"/>
+				<xs:enumeration value="PERSON_FUNC$MIX_ENGINEER#Mix Engineer"/>
+				<xs:enumeration value="PERSON_FUNC$ASSISTANT_ENGINEER#Assistant Engineer"/>
+				<xs:enumeration value="PERSON_FUNC$P_ACOUSTIC_BASS#Acoustic Bass"/>
+				<xs:enumeration value="PERSON_FUNC$P_ACOUSTIC_GUITAR#Acoustic Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$P_ALTO_SAXOPHONE#Alto Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$P_BACKING_VOCALIST#Backing Vocalist"/>
+				<xs:enumeration value="PERSON_FUNC$P_BARITONE_SAXOPHONE#Baritone Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$P_BASS_GUITAR#Bass Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$P_CELLO#Cello"/>
+				<xs:enumeration value="PERSON_FUNC$P_DOUBLE_BASS#Double Bass"/>
+				<xs:enumeration value="PERSON_FUNC$P_DRUMS#Drums"/>
+				<xs:enumeration value="PERSON_FUNC$P_ELECTRIC_GUITAR#Electric Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$P_ELECTRONICS#Electronics"/>
+				<xs:enumeration value="PERSON_FUNC$P_FLUTE#Flute"/>
+				<xs:enumeration value="PERSON_FUNC$P_KEYBOARDS#Keyboards"/>
+				<xs:enumeration value="PERSON_FUNC$P_LEAD_GUITAR#Lead Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$P_LEAD_VOCALIST#Lead Vocalist"/>
+				<xs:enumeration value="PERSON_FUNC$P_ORGAN#Organ"/>
+				<xs:enumeration value="PERSON_FUNC$P_OTHER#Other (see notes)"/>
+				<xs:enumeration value="PERSON_FUNC$P_PERCUSSION#Percussion"/>
+				<xs:enumeration value="PERSON_FUNC$P_PIANO#Piano"/>
+				<xs:enumeration value="PERSON_FUNC$P_STRINGS#Strings"/>
+				<xs:enumeration value="PERSON_FUNC$P_TAMBOURINE#Tambourine"/>
+				<xs:enumeration value="PERSON_FUNC$P_TENOR_SAXOPHONE#Tenor Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$P_TROMBONE#Trombone"/>
+				<xs:enumeration value="PERSON_FUNC$P_TRUMPET#Trumpet"/>
+				<xs:enumeration value="PERSON_FUNC$P_TURNTABLIST#Turntablist"/>
+				<xs:enumeration value="PERSON_FUNC$P_VIOLA#Viola"/>
+				<xs:enumeration value="PERSON_FUNC$P_VIOLIN#Violin"/>
+				<xs:enumeration value="PERSON_FUNC$P_WOODWIND#Woodwind"/>
+				<!-- Classical and other roles-->
+				<xs:enumeration value="PERSON_FUNC$11_STRING_LUTE#11 String Lute"/>
+				<xs:enumeration value="PERSON_FUNC$5_STRING_DOUBLE_BASS#5 String Double Bass"/>
+				<xs:enumeration value="PERSON_FUNC$ACCORDION#Accordion"/>
+				<xs:enumeration value="PERSON_FUNC$ACOUSTIC_GUITAR#Acoustic Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$AGHTE_REGAL#Aghte Regal"/>
+				<xs:enumeration value="PERSON_FUNC$ALPHORN#Alphorn"/>
+				<xs:enumeration value="PERSON_FUNC$ALTO#Alto"/>
+				<xs:enumeration value="PERSON_FUNC$ALTO_FLUTE#Alto Flute"/>
+				<xs:enumeration value="PERSON_FUNC$ALTO_SAXOPHONE#Alto Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$ARAB_LUTE#Arab Lute"/>
+				<xs:enumeration value="PERSON_FUNC$ARCHLUTE#Archlute"/>
+				<xs:enumeration value="PERSON_FUNC$ARPA_DOPPIA#Arpa Doppia"/>
+				<xs:enumeration value="PERSON_FUNC$ARTISTIC_DIRECTOR#Artistic Director"/>
+				<xs:enumeration value="PERSON_FUNC$ARTISTIC_LEADER#Artistic Leader"/>
+				<xs:enumeration value="PERSON_FUNC$BAGPIPES#Bagpipes"/>
+				<xs:enumeration value="PERSON_FUNC$BANDONEON#Bandoneon"/>
+				<xs:enumeration value="PERSON_FUNC$BARITONE#Baritone"/>
+				<xs:enumeration value="PERSON_FUNC$BARITONE_GUITAR#Baritone Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$BAROQUE_FLUTE#Baroque Flute"/>
+				<xs:enumeration value="PERSON_FUNC$BAROQUE_GUITAR#Baroque Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$BAROQUE_LUTE#Baroque Lute"/>
+				<xs:enumeration value="PERSON_FUNC$BAROQUE_VIOLIN#Baroque Violin"/>
+				<xs:enumeration value="PERSON_FUNC$BAROQUE_VIOLONCELLO#Baroque Violoncello"/>
+				<xs:enumeration value="PERSON_FUNC$BASS#Bass"/>
+				<xs:enumeration value="PERSON_FUNC$BASS_BARITONE#Bass Baritone"/>
+				<xs:enumeration value="PERSON_FUNC$BASS_CLARINET#Bass Clarinet"/>
+				<xs:enumeration value="PERSON_FUNC$BASS_GAMBA#Bass Gamba"/>
+				<xs:enumeration value="PERSON_FUNC$BASS_VIOL#Bass Viol"/>
+				<xs:enumeration value="PERSON_FUNC$BASSOON#Bassoon"/>
+				<xs:enumeration value="PERSON_FUNC$BIG_BAND#Big Band"/>
+				<xs:enumeration value="PERSON_FUNC$BRASS_BAND#Brass Band"/>
+				<xs:enumeration value="PERSON_FUNC$BUISINES#Buisines"/>
+				<xs:enumeration value="PERSON_FUNC$CABARET#Cabaret Artist"/>
+				<xs:enumeration value="PERSON_FUNC$CELESTA#Celesta"/>
+				<xs:enumeration value="PERSON_FUNC$CELLO#Cello"/>
+				<xs:enumeration value="PERSON_FUNC$CHALUMEAUX#Chalumeaux"/>
+				<xs:enumeration value="PERSON_FUNC$CHAMBER_ORGAN#Chamber Organ"/>
+				<xs:enumeration value="PERSON_FUNC$CHOIR#Choir"/>
+				<xs:enumeration value="PERSON_FUNC$CHOIRMASTER#Choirmaster"/>
+				<xs:enumeration value="PERSON_FUNC$CIMBALOM#Cimbalom"/>
+				<xs:enumeration value="PERSON_FUNC$CITOLE#Citole"/>
+				<xs:enumeration value="PERSON_FUNC$CLARINET#Clarinet"/>
+				<xs:enumeration value="PERSON_FUNC$CONTINUO#Continuo"/>
+				<xs:enumeration value="PERSON_FUNC$CONTRABASS#Contrabass"/>
+				<xs:enumeration value="PERSON_FUNC$CONTRALTO#Contralto"/>
+				<xs:enumeration value="PERSON_FUNC$COR_ANGLAIS#Cor Anglais"/>
+				<xs:enumeration value="PERSON_FUNC$CORNET#Cornet"/>
+				<xs:enumeration value="PERSON_FUNC$CORNETTO#Cornetto"/>
+				<xs:enumeration value="PERSON_FUNC$COUNTER_TENOR#Counter Tenor"/>
+				<xs:enumeration value="PERSON_FUNC$DESCANT_VIOLA_DA_GAMBA#Descant Viola Da Gamba"/>
+				<xs:enumeration value="PERSON_FUNC$DIDGERIDOO#Didgeridoo"/>
+				<xs:enumeration value="PERSON_FUNC$DIRECTOR#Director"/>
+				<xs:enumeration value="PERSON_FUNC$DOLCE_MELOS#Dolce Melos"/>
+				<xs:enumeration value="PERSON_FUNC$DOUBLE_BASS#Double Bass"/>
+				<xs:enumeration value="PERSON_FUNC$DOUBLE_FLUTE#Double Flute"/>
+				<xs:enumeration value="PERSON_FUNC$DRUMS#Drums"/>
+				<xs:enumeration value="PERSON_FUNC$DULCIMER#Dulcimer"/>
+				<xs:enumeration value="PERSON_FUNC$DUO#Duo"/>
+				<xs:enumeration value="PERSON_FUNC$ELECTRIC_GUITAR#Electric Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$EUPHONIUM#Euphonium"/>
+				<xs:enumeration value="PERSON_FUNC$FIDDLE#Fiddle"/>
+				<xs:enumeration value="PERSON_FUNC$FLUGELHORN#Flugelhorn"/>
+				<xs:enumeration value="PERSON_FUNC$FLUTE#Flute"/>
+				<xs:enumeration value="PERSON_FUNC$FORTEPIANO#Fortepiano"/>
+				<xs:enumeration value="PERSON_FUNC$FRENCH_HORN#French Horn"/>
+				<xs:enumeration value="PERSON_FUNC$GAMBA#Gamba"/>
+				<xs:enumeration value="PERSON_FUNC$GITTERN#Gittern"/>
+				<xs:enumeration value="PERSON_FUNC$GUITAR#Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$HARMONICA#Harmonica"/>
+				<xs:enumeration value="PERSON_FUNC$HARMONIUM#Harmonium"/>
+				<xs:enumeration value="PERSON_FUNC$HARP#Harp"/>
+				<xs:enumeration value="PERSON_FUNC$HARPSICHORD#Harpsichord"/>
+				<xs:enumeration value="PERSON_FUNC$HORN#Horn"/>
+				<xs:enumeration value="PERSON_FUNC$HURDY_GURDY#Hurdy Gurdy"/>
+				<xs:enumeration value="PERSON_FUNC$INSTRUMENTALIST#Instrumentalist"/>
+				<xs:enumeration value="PERSON_FUNC$KRUMHORN#Krumhorn"/>
+				<xs:enumeration value="PERSON_FUNC$LEADER#Leader"/>
+				<xs:enumeration value="PERSON_FUNC$LUTE#Lute"/>
+				<xs:enumeration value="PERSON_FUNC$MANDOLIN#Mandolin"/>
+				<xs:enumeration value="PERSON_FUNC$MEDIEVAL_FIDDLE#Medieval Fiddle"/>
+				<xs:enumeration value="PERSON_FUNC$MEZZO_SOPRANO#Mezzo Soprano"/>
+				<xs:enumeration value="PERSON_FUNC$MISC_VOICE#Misc Voice"/>
+				<xs:enumeration value="PERSON_FUNC$NARRATOR#Narrator"/>
+				<xs:enumeration value="PERSON_FUNC$OBOE#Oboe"/>
+				<xs:enumeration value="PERSON_FUNC$OBOE_D'AMORE#Oboe D'Amore"/>
+				<xs:enumeration value="PERSON_FUNC$ORGAN#Organ"/>
+				<xs:enumeration value="PERSON_FUNC$PERCUSSION#Percussion"/>
+				<xs:enumeration value="PERSON_FUNC$PIANO#Piano"/>
+				<xs:enumeration value="PERSON_FUNC$PIANO_DUO#Piano Duo"/>
+				<xs:enumeration value="PERSON_FUNC$PIANOFORTE#Pianoforte"/>
+				<xs:enumeration value="PERSON_FUNC$PICCOLO#Piccolo"/>
+				<xs:enumeration value="PERSON_FUNC$PIPE#Pipe"/>
+				<xs:enumeration value="PERSON_FUNC$POSITIVE_ORGAN#Positive Organ"/>
+				<xs:enumeration value="PERSON_FUNC$PSALTER#Psalter"/>
+				<xs:enumeration value="PERSON_FUNC$REBEC#Rebec"/>
+				<xs:enumeration value="PERSON_FUNC$RECITER#Reciter"/>
+				<xs:enumeration value="PERSON_FUNC$RECORDER#Recorder"/>
+				<xs:enumeration value="PERSON_FUNC$RENAISSANCE_GUITAR#Renaissance Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$SAXOPHONE#Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$SEXTET#Sextet"/>
+				<xs:enumeration value="PERSON_FUNC$SHAWM#Shawm"/>
+				<xs:enumeration value="PERSON_FUNC$SITAR#Sitar"/>
+				<xs:enumeration value="PERSON_FUNC$SOPRANO#Soprano"/>
+				<xs:enumeration value="PERSON_FUNC$SOPRANO_SAXOPHONE#Soprano Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$STANDARD_GUITAR#Standard Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$STRING_QUARTET#String Quartet"/>
+				<xs:enumeration value="PERSON_FUNC$SYMPHONY#Symphony"/>
+				<xs:enumeration value="PERSON_FUNC$TABLA#Tabla"/>
+				<xs:enumeration value="PERSON_FUNC$TABOR#Tabor"/>
+				<xs:enumeration value="PERSON_FUNC$TAILLE#Taille"/>
+				<xs:enumeration value="PERSON_FUNC$TAMBOURINE#Tambourine"/>
+				<xs:enumeration value="PERSON_FUNC$TAROGATO#Tarogato"/>
+				<xs:enumeration value="PERSON_FUNC$TENOR#Tenor"/>
+				<xs:enumeration value="PERSON_FUNC$TENOR_SAXOPHONE#Tenor Saxophone"/>
+				<xs:enumeration value="PERSON_FUNC$TENOR_VIOL#Tenor Viol"/>
+				<xs:enumeration value="PERSON_FUNC$THEORBO#Theorbo"/>
+				<xs:enumeration value="PERSON_FUNC$TIMPANI#Timpani"/>
+				<xs:enumeration value="PERSON_FUNC$TRANSVERSE_FLUTE#Transverse Flute"/>
+				<xs:enumeration value="PERSON_FUNC$TREBLE#Treble"/>
+				<xs:enumeration value="PERSON_FUNC$TREBLE_GUITAR#Treble Guitar"/>
+				<xs:enumeration value="PERSON_FUNC$TREBLE_VIOL#Treble Viol"/>
+				<xs:enumeration value="PERSON_FUNC$TRIO#Trio"/>
+				<xs:enumeration value="PERSON_FUNC$TROMBONE#Trombone"/>
+				<xs:enumeration value="PERSON_FUNC$TRUMPET#Trumpet"/>
+				<xs:enumeration value="PERSON_FUNC$TUBA#Tuba"/>
+				<xs:enumeration value="PERSON_FUNC$VIBRAPHONE#Vibraphone"/>
+				<xs:enumeration value="PERSON_FUNC$VIHUELA#Vihuela"/>
+				<xs:enumeration value="PERSON_FUNC$VIHUELA_DE_ARCO#Vihuela De Arco"/>
+				<xs:enumeration value="PERSON_FUNC$VIHUELA_DE_RUEDA#Vihuela De Rueda"/>
+				<xs:enumeration value="PERSON_FUNC$VIOL#Viol"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLA#Viola"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLA_DA_GAMBA#Viola Da Gamba"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLA_D'ARCO#Viola D'Arco"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLE#Viole"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLIN#Violin"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLONCELLO#Violoncello"/>
+				<xs:enumeration value="PERSON_FUNC$VIOLONE#Violone"/>
+				<xs:enumeration value="PERSON_FUNC$VOCALIST#Vocalist"/>
+				<xs:enumeration value="PERSON_FUNC$WIND_BAND#Wind Band"/>
+				<xs:enumeration value="PERSON_FUNC$WIND_QUINTET#Wind Quintet"/>
+				<xs:enumeration value="PERSON_FUNC$WIND_TRIO#Wind Trio"/>
+				<xs:enumeration value="PERSON_FUNC$WOODWIND#Woodwind"/>
+				<xs:enumeration value="PERSON_FUNC$XYLOPHONE#Xylophone"/>
+				<xs:enumeration value="PERSON_FUNC$AGENT#Agent"/>
+				<xs:enumeration value="PERSON_FUNC$BROADCAST_ASSISTANT#Broadcast Assistant"/>
+				<xs:enumeration value="PERSON_FUNC$CAMERAMAN#Cameraman"/>
+				<xs:enumeration value="PERSON_FUNC$CONTRIBUTOR#Contributor"/>
+				<xs:enumeration value="PERSON_FUNC$DEPARTMENT#Department"/>
+				<xs:enumeration value="PERSON_FUNC$EDITOR_IN_CHARGE#Editor in Charge"/>
+				<xs:enumeration value="PERSON_FUNC$EXECUTIVE_PRODUCER#Executive Producer"/>
+				<xs:enumeration value="PERSON_FUNC$SENIOR_PRODUCER#Senior Producer"/>
+				<xs:enumeration value="PERSON_FUNC$ASSISTANT_PRODUCER#Assistant Producer"/>
+				<xs:enumeration value="PERSON_FUNC$AUTHOR#Author"/>
+				<xs:enumeration value="PERSON_FUNC$EDITOR#Editor"/>
+				<xs:enumeration value="PERSON_FUNC$ORIGINATOR#Originator"/>
+				<xs:enumeration value="PERSON_FUNC$PLAYWRIGHT#Playwright"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_PRODUCER#Programme Producer"/>
+				<xs:enumeration value="PERSON_FUNC$RESEARCHER#Researcher"/>
+				<xs:enumeration value="PERSON_FUNC$TRANSCRIBER#Transcriber"/>
+				<xs:enumeration value="PERSON_FUNC$TRANSLATOR#Translator"/>
+				<xs:enumeration value="PERSON_FUNC$INTERVIEWER#Interviewer"/>
+				<xs:enumeration value="PERSON_FUNC$DEPUTY_PRESENTER#Deputy Presenter"/>
+				<xs:enumeration value="PERSON_FUNC$EXPERT_CONTRIBUTOR#Expert Contributor"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_STAFF#Programme Team"/>
+				<xs:enumeration value="PERSON_FUNC$WORD_PERFORMER#Word Performer"/>
+				<xs:enumeration value="PERSON_FUNC$WORD_REPORTER#Reporter"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:complexType name="CLIP_PERSONType">
+		<xs:sequence>
+			<xs:element name="PERSON_NAME" type="xs:string"/>
+			<xs:element name="PMAP_FUNC" type="xs:string"/>
+			<xs:element name="PMAP_SUBFUNC" type="xs:string"/>
+			<!--Person entries within Metadatacontainer restricted to these three values-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CLIP_METADATA_CONTAINERType">
+		<xs:sequence>
+			<xs:element name="GENE_TITLE" type="xs:string"/>
+			<xs:element name="GENE_MULTIMEDIA_TITLE" type="xs:string"/>
+			<xs:element name="GENE_TAKE_FLAGS" type="xs:string"/>
+			<xs:element name="GENE_WORK_STATUS" type="xs:string"/>
+			<xs:element name="GENE_ISRC" type="xs:string"/>
+			<xs:element name="GENE_EXT_SYS" type="xs:string"/>
+			<xs:element name="GENE_CATALOG_DB0" type="xs:string"/>
+			<xs:element name="GENE_ORDER_NO" type="xs:string"/>
+			<xs:element name="GENE_MUSIC_CODE" type="xs:string"/>
+			<xs:element name="GENE_PROD_UUID" type="xs:string"/>
+			<xs:element name="GENE_ALBUM" type="xs:string"/>
+			<xs:element name="GENE_LABEL" type="xs:string"/>
+			<xs:element name="GENE_TRACK" type="xs:string"/>
+			<xs:element name="GENE_SIDE" type="xs:string"/>
+			<xs:element name="GENE_EAN" type="xs:string"/>
+			<xs:element name="GENE_EVENT_GROUP" type="xs:string"/>
+			<xs:element name="GENE_REC_VENUE" type="xs:string"/>
+			<xs:element name="GENE_LOCATION" type="xs:string"/>
+			<xs:element name="GENE_REC_TIME" type="xs:string"/>
+			<xs:element name="GENE_DIGI_SOURCE" type="xs:string"/>
+			<xs:element name="GENE_PERFORMERS" type="xs:string"/>
+			<xs:element name="GENE_COMPOSERS" type="xs:string"/>
+			<xs:element name="GENE_PUBLISHER" type="xs:string"/>
+			<xs:element name="GENE_CONTRIBUTORS" type="xs:string"/>
+			<xs:element ref="META_CLIP_PERSONS" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:attribute name="ValueName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string"/>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="SubFunc">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<!--xs:enumeration value="PERSON_FUNC$COMPOSER"/>
+				<xs:enumeration value="PERSON_FUNC$PERFORMER"/>
+				<xs:enumeration value="PERSON_FUNC$SOUND_ENGINEER"/>
+				<xs:enumeration value="PERSON_FUNC$CAMERAMAN"/>
+				<xs:enumeration value="PERSON_FUNC$MUSIC_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$MUSIC_MANAGER"/>
+				<xs:enumeration value="PERSON_FUNC$MUSIC_PROMOTER"/>
+				<xs:enumeration value="PERSON_FUNC$MUSIC_AGENT"/>
+				<xs:enumeration value="PERSON_FUNC$EDITOR_IN_CHARGE"/>
+				<xs:enumeration value="PERSON_FUNC$MUSIC_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$ASSISTANT_ENGINEER"/>
+				<xs:enumeration value="PERSON_FUNC$DEPARTMENT"/>
+				<xs:enumeration value="PERSON_FUNC$BROADCAST_ASSISTANT"/>
+				<xs:enumeration value="PERSON_FUNC$ASSISTANT_ENGINEER"/>
+				<xs:enumeration value="PERSON_FUNC$MIX_ENGINEER"/>
+				<xs:enumeration value="PERSON_FUNC$SENIOR_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$EXECUTIVE_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$P_LEAD_VOCALIST"/>
+				<xs:enumeration value="PERSON_FUNC$P_BACKING_VOCALIST"/>
+				<xs:enumeration value="PERSON_FUNC$P_LEAD_GUITAR"/>
+				<xs:enumeration value="PERSON_FUNC$P_ELECTRIC_GUITAR"/>
+				<xs:enumeration value="PERSON_FUNC$P_ACOUSTIC_GUITAR"/>
+				<xs:enumeration value="PERSON_FUNC$P_BASS_GUITAR"/>
+				<xs:enumeration value="PERSON_FUNC$P_ACOUSTIC_BASS"/>
+				<xs:enumeration value="PERSON_FUNC$P_DOUBLE_BASS"/>
+				<xs:enumeration value="PERSON_FUNC$P_DRUMS"/>
+				<xs:enumeration value="PERSON_FUNC$P_PIANO"/>
+				<xs:enumeration value="PERSON_FUNC$P_ORGAN"/>
+				<xs:enumeration value="PERSON_FUNC$P_KEYBOARDS"/>
+				<xs:enumeration value="PERSON_FUNC$P_ELECTRONICS"/>
+				<xs:enumeration value="PERSON_FUNC$P_PERCUSSION"/>
+				<xs:enumeration value="PERSON_FUNC$P_TAMBOURINE"/>
+				<xs:enumeration value="PERSON_FUNC$P_TURNTABLIST"/>
+				<xs:enumeration value="PERSON_FUNC$P_STRINGS"/>
+				<xs:enumeration value="PERSON_FUNC$P_WOODWIND"/>
+				<xs:enumeration value="PERSON_FUNC$P_FLUTE"/>
+				<xs:enumeration value="PERSON_FUNC$P_TENOR_SAXAPHONE"/>
+				<xs:enumeration value="PERSON_FUNC$P_ALTO_SAXAPHONE"/>
+				<xs:enumeration value="PERSON_FUNC$P_BARITONE_SAXAPHONE"/>
+				<xs:enumeration value="PERSON_FUNC$P_TROMBONE"/>
+				<xs:enumeration value="PERSON_FUNC$P_TRUMPET"/>
+				<xs:enumeration value="PERSON_FUNC$P_VIOLIN"/>
+				<xs:enumeration value="PERSON_FUNC$P_VIOLA"/>
+				<xs:enumeration value="PERSON_FUNC$P_CELLO"/>
+				<xs:enumeration value="PERSON_FUNC$P_OTHER"/>
+				<xs:enumeration value="PERSON_FUNC$ARRANGER"/>
+				<xs:enumeration value="PERSON_FUNC$ORIGINAL_ARTIST"/>
+				<xs:enumeration value="PERSON_FUNC$LYRICIST"/>
+				<xs:enumeration value="PERSON_FUNC$TRANSLATOR"/>
+				<xs:enumeration value="PERSON_FUNC$TRANSCRIBER"/>
+				<xs:enumeration value="PERSON_FUNC$ORCHESTRATOR"/>
+				<xs:enumeration value="PERSON_FUNC$LIBRETTIST"/>
+				<xs:enumeration value="PERSON_FUNC$PLAYWRIGHT"/>
+				<xs:enumeration value="PERSON_FUNC$EDITOR"/>
+				<xs:enumeration value="PERSON_FUNC$AUTHOR"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$ASSISTANT_PRODUCER"/>
+				<xs:enumeration value="PERSON_FUNC$RESEARCHER"/>
+				<xs:enumeration value="PERSON_FUNC$REPORTER"/>
+				<xs:enumeration value="PERSON_FUNC$DJ"/>
+				<xs:enumeration value="PERSON_FUNC$MC"/>
+				<xs:enumeration value="PERSON_FUNC$GUEST_ARTIST"/>
+				<xs:enumeration value="PERSON_FUNC$SUPPORTING_ARTIST"/>
+				<xs:enumeration value="PERSON_FUNC$FEATURED_ARTIST"/>
+				<xs:enumeration value="PERSON_FUNC$VERSUS_ARTIST"/>
+				<xs:enumeration value="PERSON_FUNC$PRESENTER"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_CONTRIBUTOR"/>
+				<xs:enumeration value="PERSON_FUNC$DEPUTY_PRESENTER"/>
+				<xs:enumeration value="PERSON_FUNC$STUDIO_GUEST"/>
+				<xs:enumeration value="PERSON_FUNC$EXPERT_CONTRIBUTOR"/>
+				<xs:enumeration value="PERSON_FUNC$REPORTER"/>
+				<xs:enumeration value="PERSON_FUNC$PROGRAMME_STAFF"/-->
+				<!-- the classical performance role would need to be added here -->
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="LogName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="GENE_TITLE"/>
+				<xs:enumeration value="GENE_MULTIMEDIA_TITLE"/>
+				<xs:enumeration value="GENE_WORK_STATUS"/>
+				<xs:enumeration value="GENE_ISRC"/>
+				<xs:enumeration value="GENE_TAKE_FLAGS"/>
+				<xs:enumeration value="GENE_EXT_SYS"/>
+				<xs:enumeration value="GENE_CATALOG_DB0"/>
+				<xs:enumeration value="GENE_ORDER_NO"/>
+				<xs:enumeration value="GENE_MUSIC_CODE"/>
+				<xs:enumeration value="GENE_PROD_UUID"/>
+				<xs:enumeration value="GENE_PUBLISHER"/>
+				<xs:enumeration value="GENE_LABEL"/>
+				<xs:enumeration value="GENE_ALBUM"/>
+				<xs:enumeration value="GENE_SIDE"/>
+				<xs:enumeration value="GENE_EAN"/>
+				<xs:enumeration value="GENE_EVENT_GROUP"/>
+				<xs:enumeration value="GENE_REC_VENUE"/>
+				<xs:enumeration value="GENE_REC_PLACE"/>
+				<xs:enumeration value="GENE_REC_TIME"/>
+				<xs:enumeration value="GENE_DIGI_SOURCE"/>
+				<xs:enumeration value="PERSON_LIST"/>
+				<xs:enumeration value="DESC_LIST"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="FuncValue">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="composer"/>
+				<xs:enumeration value="featured artist"/>
+				<xs:enumeration value="main artist"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="ExtName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Title"/>
+				<xs:enumeration value="Multimedia_Title"/>
+				<xs:enumeration value="Work Status"/>
+				<xs:enumeration value="ISRC Code"/>
+				<xs:enumeration value="Extrnal System ID"/>
+				<xs:enumeration value="Catalogue Number"/>
+				<xs:enumeration value="Track No"/>
+				<xs:enumeration value="Music Codes"/>
+				<xs:enumeration value="Proteus GUID"/>
+				<xs:enumeration value="Publisher"/>
+				<xs:enumeration value="Label"/>
+				<xs:enumeration value="Album Title"/>
+				<xs:enumeration value="Side"/>
+				<xs:enumeration value="Album EAN"/>
+				<xs:enumeration value="Event group"/>
+				<xs:enumeration value="Event Name"/>
+				<xs:enumeration value="Event Location"/>
+				<xs:enumeration value="Event Date"/>
+				<xs:enumeration value="Digi Source"/>
+				<xs:enumeration value="Persons"/>
+				<xs:enumeration value="Descriptors"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="DescCatalog">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="DESC_CATALOG$MUSIC"/>
+				<xs:enumeration value="DESC_CATALOG$WORD"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<!--The following Metadata refer to the Audiofile exported-->
+	<xs:element name="AUDIO_MARKER" type="AUDIO_MARKERType"/>
+	<xs:element name="AUDIO_MARKERS" type="AUDIO_MARKERSType"/>
+	<xs:element name="BASIC_TEXT" type="BTXType"/>
+	<xs:element name="GENEALOGY">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="GENEALOGY_ITEM" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GENEALOGY_ITEM" type="GENEALOGY_ITEMType"/>
+	<xs:element name="CLIP" type="CLIPType">
+		<xs:annotation>
+			<xs:documentation>the linked take representation of a component</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="CLIP_INFO" type="GENERICType"/>
+	<xs:element name="CLIP_PERSONS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="PERSON" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="CLIP_ATTACHMENT" type="MULTIMEDIAType"/>
+	<xs:element name="GENERIC" type="GENERICType"/>
+	<xs:element name="TAKE_PERSONS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="PERSON" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PERSON" type="PERSONType"/>
+	<xs:element name="METADATA_CONTAINER" type="CLIP_METADATA_CONTAINERType">
+		<xs:annotation>
+			<xs:documentation>the "properly structured" representation of the metadata container</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="META_CLIP_PERSONS">
+		<xs:annotation>
+			<xs:documentation>persons as used in the metadata container</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="META_CLIP_PERSON" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="META_CLIP_PERSON" type="CLIP_PERSONType">
+		<xs:annotation>
+			<xs:documentation>person as used in the metadata container</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>True</IsPackable>
+        <Copyright>© Copyright Soundmouse Ltd. 2012–2019</Copyright>
+        <Title>Soundmouse Utils</Title>
+        <Authors>Core @ Soundmouse</Authors>
+        <Description>Soundmouse Utils</Description>
+        <PackageTags>soundmouse neo utils</PackageTags>
+        <PackageId>Soundmouse.Utils</PackageId>
+        <LangVersion>latest</LangVersion>
+        <DebugType>embedded</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Serilog" Version="2.9.0" />
+    </ItemGroup>
+
+</Project>

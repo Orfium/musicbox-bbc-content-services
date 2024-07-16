@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Repository\MusicAPIRepository.cs~RF1069ac0d.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.39" />
+    <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.101.37" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dapper.SimpleCRUD" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="Snickler.EFCore" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Elasticsearch\Elasticsearch.csproj" />
+    <ProjectReference Include="..\MusicManager.Application\MusicManager.Application.csproj" />
+    <ProjectReference Include="..\MusicManager.Core\MusicManager.Core.csproj" />
+    <ProjectReference Include="..\MusicManager.Logics\MusicManager.Logics.csproj" />
+    <ProjectReference Include="..\MusicManager.PrsSearch\MusicManager.PrsSearch.csproj" />
+  </ItemGroup>
+
+</Project>

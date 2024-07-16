@@ -1,0 +1,84 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.Elasticsearch"
+    ],
+    "Enrich": [
+      "WithThreadId"
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Error",
+        "System": "Warning"
+      }
+    }
+  },  
+   "AllowedHosts": "*",  
+  "AppSettings": {
+    "AppVersion": "1.28.3",
+    "AppEnvironment": "staging",
+    "ServiceId": 5,
+    "SyncServiceId": 0,
+    "MasterWSId": "6799a1d1-2297-46c3-9a16-927286187f25",   
+    "MetadataApiSettings": {
+      "API_Endpoint": "https://api.soundmouse.com/metadata/v1/"
+    },
+    "MusicApiSettings": {
+      "API_Endpoint": "https://api.soundmouse.com/music/v2/"
+    },     
+    "elasticsearch": {   
+      "track_index": "track-ml-staging-n2eu7wcxhyhmoj0fxgsf",
+      "album_index": "album-ml-staging-n2eu7wcxhyhmoj0fxgsf",
+      "service_log_index": "medialibrary-service-log-staging"
+    },
+    "AWSS3": {     
+      "BucketName": "bbc-ml-upload",
+      "FolderName": "staging",
+      "Reagion": "eu-west-1",
+      "BucketUrl": "https://bbc-ml-upload.s3.eu-west-1.amazonaws.com",
+      "TokenKey": "This is my test private key",
+      "TokenName": "udyoga@adelanka.com"
+    },
+    "RabbitMQConfiguration": {
+      "Host": "192.168.5.140",
+      "Port": 5672,
+      "VirtualHost": "playout",     
+      "RequestQueue": "playout.media-library-request",
+      "ResponseQueue": "playout.media-library-response"    
+    },
+    "SMCoreApiSettings": {
+      "API_Endpoint": "https://api.core.soundmouse.net/"
+    },
+    "AWSS3_ASSET_HUB": {     
+      "BucketName": "",
+      "FolderName": "",
+      "BucketUrl": "",
+      "TokenKey": "",
+      "TokenName": "",
+      "ServiceUrl": "https://assets.soundmouse.com"
+    },
+    "SigniantConfigs": {
+      "FlightStorageConfigId": "m1sVwcSLs",
+      "TargetAgent": "W1_Soundmouse_Agents!9",
+      "SimpleFileLocatorPath": "file://bfgshuttle.bbc.co.uk/C:/temp/",
+      "TransferTemplate": "soundmouse_test_flight",
+      "JobGroup": "Soundmouse_Test",
+      "ServiceBaseUrl": "http://bfgshuttle.bbc.co.uk",
+      "ReplyBaseUrl": "https://staging-bbcmusicbox-api.soundmouse.com",      
+      "DeliveryDestinationBucket": "bbc-playout-delivery"
+    },
+    "DeliveryDestinationS3Configuration": {
+      "ServiceUrl": "",
+      "DefaultBucket": "bbc-playout-delivery"      
+    }
+  }
+}
