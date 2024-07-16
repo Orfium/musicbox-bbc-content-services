@@ -47,6 +47,7 @@ Before you can run the app, make sure you have the following installed on your m
     DELIVERY_DESTINATION_S3_ACCESS_KEY=XXX
     DELIVERY_DESTINATION_S3_SECRET_KEY=XXX
     ASPNETCORE_URLS=http://*:5001
+    ASPNETCORE_ENVIRONMENT=Development
     ```
 3. Build the Docker image:
 
@@ -59,3 +60,7 @@ Before you can run the app, make sure you have the following installed on your m
     ```shell
     make up
     ```
+
+## API urls and documentation
+1. Swagger: http://0.0.0.0:5001/swagger/index.html - Only works if ASPNETCORE_ENVIRONMENT=Development env var is set
+2. Health check/Version endpoint: http://0.0.0.0:5001/api/User/APIVersion
