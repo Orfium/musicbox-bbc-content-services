@@ -64,3 +64,7 @@ Before you can run the app, make sure you have the following installed on your m
 ## API urls and documentation
 1. Swagger: http://0.0.0.0:5001/swagger/index.html - Only works if ASPNETCORE_ENVIRONMENT=Development env var is set
 2. Health check/Version endpoint: http://0.0.0.0:5001/api/User/APIVersion
+
+
+## Local Development
+In order your IDE to be able to recognize the packages and methods in your project you need to restore the parent solution. Because some packages are from aws code artifact we need first to get a token and then restore the solution. All these commands are bundled in the Makefile. In order to restore the solution you may simply execute: ```make nuget-restore```
