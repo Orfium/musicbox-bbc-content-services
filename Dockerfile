@@ -19,10 +19,10 @@ COPY NuGet.config NuGet.config
 RUN dotnet restore "MusicManager.API.sln"
 RUN dotnet build "MusicManager.API.sln" -c Release -o /app/build
 
-WORKDIR "/src/MusicManager.SyncService/"
-COPY ./settings/services-live/default_appsettings.json appsettings.json
+COPY ./settings/services-live/default_appsettings.json /src/MusicManager.SyncService/appsettings.json
 
-RUN dotnet publish "MusicManager.SyncService.csproj" -c Release -o /app/publish
+RUN dotnet publish "/src/MusicManager.SyncService/MusicManager.SyncService.csproj" -c Release -o /app/publish/MusicManager.SyncService
+RUN dotnet publish "/src/MusicManager.API/MusicManager.API.csproj" -c Release -o /app/publish/MusicManager.API
 
 FROM base AS final
 WORKDIR /app

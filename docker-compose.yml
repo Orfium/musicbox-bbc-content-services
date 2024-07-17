@@ -2,10 +2,10 @@ version: '3.7'
 
 x-common:
   &x-common
-  image: medialibrary-syncservice
+  image: medialibrary-content-services
   build:
     context: .
-    dockerfile: Dockerfile.Service
+    dockerfile: Dockerfile
     x-bake:
       secret:
         - id=CODEARTIFACT_TOKEN,env=CODEARTIFACT_TOKEN
@@ -74,7 +74,7 @@ services:
     <<: *x-common
     container_name: ml_uploader_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService.dll"
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
     volumes:
       - ./settings/services-dev/uploader_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -86,12 +86,13 @@ services:
     depends_on:
       - postgres
       - opensearch
+
   ml_track_sync_service:
     <<: *x-common
     container_name: ml_track_sync_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService.dll"
-    image: medialibrary-syncservice
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    image: medialibrary-content-services
     volumes:
      - ./settings/services-dev/track_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -104,8 +105,8 @@ services:
     <<: *x-common
     container_name: ml_playout_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService.dll"
-    image: medialibrary-syncservice
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    image: medialibrary-content-services
     volumes:
      - ./settings/services-dev/playout_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -117,9 +118,9 @@ services:
   ml_master_ws_sync_service:
     <<: *x-common
     container_name: ml_master_ws_sync_service
-    command: "dotnet MusicManager.SyncService.dll"
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
     restart: unless-stopped
-    image: medialibrary-syncservice
+    image: medialibrary-content-services
     volumes:
      - ./settings/services-dev/master_ws_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -128,12 +129,13 @@ services:
       options:
         max-size: "20m"
         max-file: "10"
+
   ml_workspace_lib_sync_service:
     <<: *x-common
     container_name: ml_workspace_lib_sync_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService.dll"
-    image: medialibrary-syncservice
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    image: medialibrary-content-services
     volumes:
      - ./settings/services-dev/workspace_lib_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -142,12 +144,13 @@ services:
       options:
         max-size: "20m"
         max-file: "10"
+  
   ml_nighttime_service:
     <<: *x-common
     container_name: ml_nighttime_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService.dll"
-    image: medialibrary-syncservice
+    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    image: medialibrary-content-services
     volumes:
      - ./settings/services-dev/nighttime_service_appsettings.json:/app/appsettings.json
     stdin_open: true
@@ -159,15 +162,11 @@ services:
   ml_content_api:
     <<: *x-common
     container_name: ml_content_api
-    build:
-      context: .
-      dockerfile: Dockerfile.Api
-    command: "dotnet MusicManager.API.dll"
+    command: "dotnet MusicManager.API/MusicManager.API.dll"
     restart: unless-stopped
-    image: medialibrary-contentapi
+    image: medialibrary-content-services
     ports: 
       - "5001:5001"
-      - "8000:8000"
     volumes:
       - ./settings/contentapi-dev/appsettings.json:/app/appsettings.json
     stdin_open: true
