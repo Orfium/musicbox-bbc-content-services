@@ -1,0 +1,76 @@
+{
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "Serilog": {
+     "Using": [
+        "Serilog.Sinks.Console",
+        "Serilog.Sinks.Elasticsearch"
+      ],
+      "Enrich": [
+        "WithThreadId"
+      ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Warning",
+          "System": "Warning"
+        }
+      }  
+    },  
+    "AllowedHosts": "*",
+    "AppSettings": {
+      "AppVersion": "1.30.1",
+      "AppEnvironment": "test",
+      "ExplicitCtagId" :  8,
+      "PPLCtagId": 9,
+      "Domain": "https://soundmouse.net",	
+      "MasterWSId": "d665348b-ec54-4233-aae7-97fde1361d0a",
+      "NpgConnection": "",
+      "MetadataApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/metadata/v1/"
+           },
+      "SMSearchApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/search/v1/"    },
+      "MusicApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/music/v2/"    },
+      "SMCoreApiSettings": {
+        "API_Endpoint": "https://api.core.soundmouse.net/"    },
+        "AWSS3": {
+        "BucketName": "bbc-ml-upload",
+        "FolderName": "Test",
+        "BucketUrl": "https://bbc-ml-upload.s3.eu-west-1.amazonaws.com",
+        "TokenKey": "123", 
+        "TokenName": "udyoga@adelanka.com"
+      },
+      "elasticsearch": {
+        "track_index": "track-ml-dev-test-n2eu7wcxhyhmoj0fxgsf",
+        "album_index": "album-ml-dev-test-n2eu7wcxhyhmoj0fxgsf",
+        "service_log_index": "medialibrary-service-log-test"
+      },
+      "AWSS3_ASSET_HUB": {    
+        "BucketName": "",
+        "FolderName": "",
+        "BucketUrl": "",
+        "TokenKey": "",
+        "TokenName": "",
+        "ServiceUrl": "https://assets.soundmouse.com"
+      },    
+      "SigniantConfigs": {     
+        "FlightStorageConfigId": "m1sVwcSLs",
+        "TargetAgent": "W1_Soundmouse_Agents!9",
+        "SimpleFileLocatorPath": "file://bfgshuttle.bbc.co.uk/C:/temp/",
+        "TransferTemplate": "soundmouse_test_flight",
+        "JobGroup": "Soundmouse_Test",
+        "ServiceBaseUrl": "http://bfgshuttle.bbc.co.uk",
+        "ReplyBaseUrl": "https://soundmouse.net/admintools/api-ml-test",
+        "DeliveryDestinationBucket": "bbc-playout-delivery"
+      },
+      "DeliveryDestinationS3Configuration": {
+        "ServiceUrl": "",
+        "DefaultBucket": "bbc-playout-delivery"    }
+      }
+  }

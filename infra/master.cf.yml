@@ -1,0 +1,1061 @@
+Parameters:
+  InitialDeployment:
+    Type: String
+
+  HostedZoneId:
+    Type: String
+
+  HostedZoneName:
+    Type: String
+
+  Subdomain:
+    Type: String
+
+  ProductName:
+    Type: String
+
+  ImageUri:
+    Type: String
+
+  ApplicationSecretArn:
+    Type: String
+    Description: App's AWS Secret ARN
+
+  EnableDatadog:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "false"
+      - "true"
+
+  DdFetchLambdaTags:
+    Description: >
+      Apply Lambda forwarder tags to ingested logs
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+
+  DdFetchLogGroupTags:
+    Description: >
+      Apply CloudWatch Log Group tags to ingested logs
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+
+  IncludeAtMatch:
+    Description: >
+      Only send logs matching the supplied regular expression and not excluded by ExcludeAtMatch
+    Type: String
+    Default: ''
+
+  ExcludeAtMatch:
+    Description: >
+      DO NOT send logs matching the supplied regular expression
+    Type: String
+    Default: '^.*ELB-HealthChecker\/2.0\\"'
+
+  DeletionProtection:
+    Description: Protects database cluster from being deleted either from console or through cli
+    Type: String
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: "true"
+
+  DBName:
+    Type: String
+    Default: musicbox_bbc_db
+
+  DBDeletionPolicy:
+    Description: The Deletion Policy for the whole RDS Cluster including its primary and replica instances
+    Type: String
+    AllowedValues:
+      - Delete
+      - Retain
+      - Snapshot
+    Default: Retain
+
+  DBUpdateReplacePolicy:
+    Description: The UpdateReplace Policy for the whole RDS Cluster including its primary and replica instances
+    Type: String
+    AllowedValues:
+      - Delete
+      - Retain
+      - Snapshot
+    Default: Retain
+
+  DBEngineVersion:
+    Description: The version of the database engine to use.
+    Type: String
+    Default: "14.5"
+
+  ApiDesiredCount:
+    Description: The number of desired fargate tasks for the API service
+    Type: String
+    Default: "1"
+
+  MLNightTimeServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLNightTime service
+    Type: String
+    Default: "1"
+
+  MLWorkspaceLibSyncServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLWorkspaceLibSync service
+    Type: String
+    Default: "1"
+  
+  MLMasterWsSyncServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLMasterWsSync service
+    Type: String
+    Default: "1"
+
+  MLPlayoutServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLPlayout service
+    Type: String
+    Default: "1"
+
+  MLTrackSyncServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLTrackSync service
+    Type: String
+    Default: "1"
+
+  MLUploaderServiceDesiredCount:
+    Description: The number of desired fargate tasks for the MLUploader service
+    Type: String
+    Default: "1"
+
+  AppEnvironment:
+    Description: The environment the app is running in
+    Type: String
+    Default: "dev"
+    AllowedValues: 
+      - "dev"
+      - "live"
+
+  AspNetCoreEnvironment:
+    Description: The environment the app is running in
+    Type: String
+    Default: ""
+
+  PresetConfigurationName:
+    Description: "Preset Configuration Name"
+    Type: String
+    Default: "production-nodedicated-multi-cheap"
+
+  OpenSearchVersion:
+    Description: "OpenSearch Version"
+    Type: String
+    Default: "OpenSearch_1.3"
+
+Conditions:
+  ShouldEnableDatadog: !Equals
+    - !Ref EnableDatadog
+    - "true"
+
+Mappings:
+  Api:
+    dev:
+      Command: ./start.sh ml-content-api dev
+    live:
+      Command: ./start.sh ml-content-api live
+  MLNightTimeService:
+    dev:
+      Command: "./start.sh ml-nighttime-service dev"
+    live:
+      Command: "./start.sh ml-nighttime-service live"
+  MLWorkspaceLibSyncService:
+    dev:
+      Command: "./start.sh ml-workspace-lib-sync-service dev"
+    live:
+      Command: "./start.sh ml-workspace-lib-sync-service live"
+  MLMasterWsSyncService:
+    dev:
+      Command: "./start.sh ml-master-ws-sync-service dev"
+    live:
+      Command: "./start.sh ml-master-ws-sync-service live"
+  MLPlayoutService:
+    dev:
+      Command: "./start.sh ml-playout-service dev"
+    live:
+      Command: "./start.sh ml-playout-service live"
+  MLTrackSyncService:
+    dev:
+      Command: "./start.sh ml-track-sync-service dev"
+    live:
+      Command: "./start.sh ml-track-sync-service live"
+  MLUploaderService:
+    dev:
+      Command: "./start.sh ml-uploader-service dev"
+    live:
+      Command: "./start.sh ml-uploader-service live"
+
+Resources:
+  Network:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/vpc-v1.0.yml
+      Parameters:
+        ProductName: !Ref ProductName
+
+  Bastion:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/bastion-v1.0.yml
+      Parameters:
+        Enable: "true"
+        VpcId: !GetAtt Network.Outputs.VPC
+        Subnets: !GetAtt Network.Outputs.PublicSubnets
+        RolePolicyArns: !Join
+          - ','
+          - - !Sub "${DBSecretPolicy}"
+
+  Database:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/rds-aurora-pg-provisioned-v0.1.yml
+      Parameters:
+        VpcID: !GetAtt Network.Outputs.VPC
+        PrivateSubnets: !GetAtt Network.Outputs.PrivateSubnets
+        DBEngineVersion: !Ref DBEngineVersion
+        DBName: !Ref DBName
+        DeletionProtection: !Ref DeletionProtection
+        DBDeletionPolicy: !Ref DBDeletionPolicy
+        DBUpdateReplacePolicy: !Ref DBUpdateReplacePolicy
+
+  SecretPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowSecretsAccess
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue # pragma: allowlist secret
+            Resource:
+              - !Ref ApplicationSecretArn
+
+  DBSecretPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowSecretsAccess
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue # pragma: allowlist secret
+            Resource:
+              - !GetAtt Database.Outputs.DBPasswordSecretArn
+
+  Cluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-cluster-v1.0.yml
+      Parameters:
+        ClusterName: !Ref AWS::StackName
+        HostedZoneId: !Ref HostedZoneId
+        HostedZoneName: !Ref HostedZoneName
+        PublicSubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        Subdomain: !Ref Subdomain
+        VpcId: !GetAtt Network.Outputs.VPC
+
+  DatadogAgent:
+    Type: AWS::CloudFormation::Stack
+    Condition: ShouldEnableDatadog
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/datadog-agent-v1.0.yml
+      Parameters:
+        InstanceType: t3.micro
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        SubnetId: !GetAtt Network.Outputs.PublicSubnet1
+        ProductName: !Ref ProductName
+
+  DatadogCloudWatchForwarderStack:
+    Condition: ShouldEnableDatadog
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/datadog-log-forwarder-v1.0.yml
+      Parameters:
+        DdApiKeySecretArn:
+          Fn::Sub: "arn:aws:secretsmanager:${AWS::Region}:719141923726:secret:datadog/cloudwatch-apikey-OLNCqc"  # pragma: allowlist secret
+        DdFetchLambdaTags: !Ref DdFetchLambdaTags
+        DdFetchLogGroupTags: !Ref DdFetchLogGroupTags
+        IncludeAtMatch: !Ref IncludeAtMatch
+        ExcludeAtMatch: !Ref ExcludeAtMatch
+
+  MyLogSubscriptionFilter:
+    Condition: ShouldEnableDatadog
+    Type: "AWS::Logs::SubscriptionFilter"
+    Properties:
+      DestinationArn: !GetAtt DatadogCloudWatchForwarderStack.Outputs.DatadogForwarderArn
+      LogGroupName: !GetAtt Cluster.Outputs.LogGroupId
+      FilterPattern: ""
+
+
+  OpenSearch:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/opensearch-v1.0.yml
+      Parameters:
+        DomainName: !Ref Subdomain
+        EngineVersion: !Ref OpenSearchVersion
+        PresetConfigurationName: !Ref PresetConfigurationName
+        PrivateSubnetList: !GetAtt Network.Outputs.PrivateSubnet1
+        VpcId: !GetAtt Network.Outputs.VPC
+
+
+  OpensearchMigrationBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  OpenSearchIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - transfer.amazonaws.com
+                - es.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: OpenSearchS3AccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: AllowOpensearch
+                Effect: Allow
+                Action:
+                  - "s3:*"
+                  - "iam:PassRole"
+                  - "es:*"
+                Resource:
+                  - !Sub "arn:aws:s3:::musicbox-opensearch-snapshot"
+                  - !Sub "arn:aws:s3:::musicbox-opensearch-snapshot/*"
+                  - !Sub "arn:aws:es:eu-west-2:462711359312:domain/musicbox-bbc*"
+                  - "arn:aws:iam::462711359312:role/SmADL1MusicBoxDev"
+  Api:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ Api, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref ApiDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - ASPNETCORE_ENVIRONMENT=${aspnetcore_environment}
+              - aspnetcore_environment: !Ref AspNetCoreEnvironment
+            - ASPNETCORE_URLS=http://*:5001
+        HealthCheckPath: "/api/User/APIVersion"
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: api
+        ServicePort: "5001"
+        Subdomain: !Ref Subdomain
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLNightTimeService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLNightTimeService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLNightTimeServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_nighttime_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLWorkspaceLibSyncService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLWorkspaceLibSyncService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLWorkspaceLibSyncServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_workspace_lib_sync_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLMasterWsSyncService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLMasterWsSyncService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLMasterWsSyncServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_master_ws_sync_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLPlayoutService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLPlayoutService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLPlayoutServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_playout_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLTrackSyncService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLTrackSyncService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLTrackSyncServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_track_sync_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+  MLUploaderService:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://orfium-cf-templates-repository-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/ecs-service-v1.0.yml
+      Parameters:
+        ClusterId: !GetAtt Cluster.Outputs.ClusterId
+        ClusterSecurityGroupId: !GetAtt Cluster.Outputs.ClusterSecurityGroupId
+        Command: !FindInMap [ MLUploaderService, !Ref AppEnvironment, Command ]
+        ContainerImage: !Ref ImageUri
+        ClusterDnsNamespaceId: !GetAtt Cluster.Outputs.ClusterDnsNamespaceId
+        DesiredCount: !Ref MLUploaderServiceDesiredCount
+        EnvironmentVariables: !Join
+          - ' '
+          - - !Sub
+                - AppSettings__elasticsearch__url=https://${OpenSearchUrl}
+                - OpenSearchUrl: !GetAtt OpenSearch.Outputs.DnsName
+            - !Sub
+              - DATABASE_USER={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PASSWORD={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_HOST={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_NAME={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - DATABASE_PORT={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__NpgConnection=Host={{resolve:secretsmanager:${db_secret_arn}:SecretString:host}};Port={{resolve:secretsmanager:${db_secret_arn}:SecretString:port}};Database={{resolve:secretsmanager:${db_secret_arn}:SecretString:dbname}};Username={{resolve:secretsmanager:${db_secret_arn}:SecretString:username}};Password={{resolve:secretsmanager:${db_secret_arn}:SecretString:password}} # pragma: allowlist secret
+              - db_secret_arn: !GetAtt Database.Outputs.DBPasswordSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3_ASSET_HUB__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:ASSET_HUB_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__AWSS3__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:AWS_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__AccessKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_ACCESS_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__DeliveryDestinationS3Configuration__SecretKey={{resolve:secretsmanager:${app_secret_arn}:SecretString:DELIVERY_DESTINATION_S3_SECRET_KEY}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MetadataApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:METADATA_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMSearchApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_SEARCH_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__MusicApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:MUSIC_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__SMCoreApiSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:SM_CORE_API_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Username={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_USERNAME}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+            - !Sub
+              - AppSettings__PRSSettings__Password={{resolve:secretsmanager:${app_secret_arn}:SecretString:PRS_PASSWORD}} # pragma: allowlist secret
+              - app_secret_arn: !Ref ApplicationSecretArn
+        HostedZoneName: !Ref HostedZoneName
+        HttpsListenerArn: !GetAtt Cluster.Outputs.HttpsListenerArn
+        ListenerRulePriority: "1"
+        LoadBalancerCanonicalHostedZoneId: !GetAtt Cluster.Outputs.LoadBalancerCanonicalHostedZoneId
+        LoadBalancerDnsName: !GetAtt Cluster.Outputs.LoadBalancerDnsName
+        LogGroupId: !GetAtt Cluster.Outputs.LogGroupId
+        Memory: "1024"
+        SubnetIds: !GetAtt Network.Outputs.PublicSubnets
+        ServiceName: ml_uploader_service
+        TaskRolePolicyArns: !Join
+          - ','
+          - - !Sub "${SecretPolicy}"
+        VpcCidr: !GetAtt Network.Outputs.VPCCidrBlock
+        VpcId: !GetAtt Network.Outputs.VPC
+        InitialDeployment: !Ref InitialDeployment
+
+Outputs:
+  HealthCheckEndpointUrl:
+    Description: Health Check Endpoint which shows API Version
+    Value: !Sub
+      - https://${service_name}.${sub_domain}.${hosted_zone_name}/api/User/APIVersion
+      - service_name: Api
+        sub_domain: !Ref Subdomain
+        hosted_zone_name: !Ref HostedZoneName
+  ClusterArn:
+    Description: ECS Cluster Arn
+    Value: !GetAtt Cluster.Outputs.ClusterArn
+  ApiServiceArn:
+    Description: ECS Service Arn for Api
+    Value: !GetAtt Api.Outputs.ServiceArn

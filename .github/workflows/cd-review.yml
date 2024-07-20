@@ -1,0 +1,95 @@
+name: Deploy Review App
+
+on:
+  pull_request:
+    types:
+      - synchronize
+      - labeled
+
+concurrency:
+  group: ${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  get-codeartifact-token:
+    uses: ./.github/workflows/get_codeartifact_consuming_info.yml
+    with:
+      is-production: false
+      token-duration: 1800
+    secrets:
+      GPG_CODEARTIFACT_TOKEN_PASSPHRASE: ${{ secrets.GPG_CODEARTIFACT_TOKEN_PASSPHRASE }}
+
+  check-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.detect-deploy.outputs.deploy }}
+    steps:
+      - name: Check if label exists on PRs
+        id: detect-deploy
+        if: ( contains(github.event.pull_request.labels.*.name, 'review') && github.event_name == 'pull_request' ) || (github.event_name == 'push')
+        run: |
+          echo "deploy=true" >> $GITHUB_OUTPUT
+
+  check-init-deploy:
+    if: ${{ needs.check-deploy.outputs.should-deploy == 'true'}}
+    needs:
+      - check-deploy
+    uses: Orfium/orfium-github-actions/.github/workflows/check-init-deploy.yml@master
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}
+
+  build-and-push:
+    if: ${{ needs.check-deploy.outputs.should-deploy == 'true'}}
+    needs:
+      - get-codeartifact-token
+      - check-deploy
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}
+      codeartifact_encrypted_token: ${{ needs.get-codeartifact-token.outputs.encrypted-token }}
+    secrets:
+      GPG_CODEARTIFACT_TOKEN_PASSPHRASE: ${{ secrets.GPG_CODEARTIFACT_TOKEN_PASSPHRASE }}
+
+  deploy:
+    needs:
+      - check-init-deploy
+      - build-and-push
+    uses: Orfium/orfium-github-actions/.github/workflows/deploy.yml@master
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}
+      main_cf_template: infra/master.cf.yml
+      dynamic_cf_parameters: '{\"ImageUri\":\"${{ needs.build-and-push.outputs.ecr-image }}\", \"InitialDeployment\":\"${{ needs.check-init-deploy.outputs.initial-deployment }}\"}'
+
+  run-initial-migration:
+    if: needs.check-init-deploy.outputs.initial-deployment == 'true'
+    needs:
+      - check-init-deploy
+      - deploy
+    uses: Orfium/orfium-github-actions/.github/workflows/run-command-v2.yml@master
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}
+      command: "dotnet MusicManager.InitDB/MusicManager.InitDB.dll"
+
+  deploy-ecs-tasks:
+    if: needs.check-init-deploy.outputs.initial-deployment == 'true'
+    needs:
+      - build-and-push
+      - run-initial-migration
+      - check-init-deploy
+    name: "Update ECS service tasks desired count after run-migrations"
+    uses: Orfium/orfium-github-actions/.github/workflows/deploy.yml@master
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}
+      main_cf_template: infra/master.cf.yml
+      dynamic_cf_parameters: '{\"ImageUri\":\"${{ needs.build-and-push.outputs.ecr-image }}\", \"InitialDeployment\":\"false\"}'

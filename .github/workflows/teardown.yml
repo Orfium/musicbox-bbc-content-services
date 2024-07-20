@@ -1,0 +1,24 @@
+name: Teardown Review app
+
+on:
+  pull_request_target:
+    types: [closed]
+  pull_request:
+    types: [unlabeled]
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  teardown:
+    if: github.event.label.name == 'review' || github.event.action == 'closed'
+    concurrency:
+      group: ${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    uses: Orfium/orfium-github-actions/.github/workflows/teardown.yml@master
+    with:
+      environment_id: review
+      environment_suffix: ${{ github.event.pull_request.number }}

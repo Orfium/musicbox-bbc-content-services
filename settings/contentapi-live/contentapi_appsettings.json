@@ -1,0 +1,79 @@
+{
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "Serilog": {
+      "Using": [
+        "Serilog.Sinks.Console",
+        "Serilog.Sinks.Elasticsearch"
+      ],
+      "Enrich": [
+        "WithThreadId"
+      ],
+      "MinimumLevel": {
+        "Default": "Information",
+        "Override": {
+          "Microsoft": "Error",
+          "System": "Warning"
+        }
+      }
+    },  
+    "AllowedHosts": "*",  
+    "AppSettings": {
+      "AppVersion": "1.43.22",
+      "AppEnvironment": "live",
+      "MasterWSId": "4e207b81-4854-454e-bbce-d9de04996b6f",
+      "ExplicitCtagId": 8,
+      "PPLCtagId": 9, 
+      "Domain": "https://bbcmusicbox.soundmouse.com",	
+      "MetadataApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/metadata/v1/"
+      },
+      "MusicApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/music/v2/"
+      },
+      "SMSearchApiSettings": {
+        "API_Endpoint": "https://api.soundmouse.com/search/v1/"
+      },
+      "SMCoreApiSettings": {
+        "API_Endpoint": "https://api.core.soundmouse.net/"
+      },
+      "AWSS3": {
+        "BucketName": "bbc-ml-upload",
+        "FolderName": "BBC_Live",
+        "BucketUrl": "https://bbc-ml-upload.s3.eu-west-1.amazonaws.com",
+        "TokenKey": "362e4eeb-c0ca-44e0-bb32-b868ca2c6b3d",
+        "TokenName": "udyoga@adelanka.com"
+      },
+      "AWSS3_ASSET_HUB": {
+        "BucketName": "",
+        "FolderName": "",
+        "BucketUrl": "",
+        "TokenKey": "",
+        "TokenName": "",
+        "ServiceUrl": "https://assets.soundmouse.com"
+      },
+      "elasticsearch": {
+        "track_index": "track-ml-live-n2eu7wcxhyhmoj0fxgsf",
+        "album_index": "album-ml-live-n2eu7wcxhyhmoj0fxgsf",
+        "service_log_index": "medialibrary-service-log-live"
+      },    
+      "SigniantConfigs": {
+        "FlightStorageConfigId": "m1sVwcSLs",
+        "TargetAgent": "W1_Soundmouse_Agents!9",
+        "SimpleFileLocatorPath": "file://bfgshuttle.bbc.co.uk/C:/temp/",
+        "TransferTemplate": "soundmouse_live_flight",
+        "JobGroup": "Soundmouse_Live",
+        "ServiceBaseUrl": "http://bfgshuttle.bbc.co.uk",
+        "ReplyBaseUrl": "https://bbcmusicbox-api.soundmouse.com",
+        "DeliveryDestinationBucket": "bbc-playout-delivery"
+      },
+      "DeliveryDestinationS3Configuration": {
+        "ServiceUrl": "",
+        "DefaultBucket": "bbc-playout-delivery"
+      }
+    }
+  }

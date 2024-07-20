@@ -61,6 +61,11 @@ Before you can run the app, make sure you have the following installed on your m
     make up
     ```
 
+5. Initiate Database
+    ```shell
+    make init_db
+    ```
+
 ## API urls and documentation
 1. Swagger: http://0.0.0.0:5001/swagger/index.html - Only works if ASPNETCORE_ENVIRONMENT=Development env var is set
 2. Health check/Version endpoint: http://0.0.0.0:5001/api/User/APIVersion

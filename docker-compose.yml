@@ -7,6 +7,8 @@ x-common:
     context: .
     dockerfile: Dockerfile
     x-bake:
+      args:
+        CACHEBUST: "1"
       secret:
         - id=CODEARTIFACT_TOKEN,env=CODEARTIFACT_TOKEN
   env_file:
@@ -74,9 +76,7 @@ services:
     <<: *x-common
     container_name: ml_uploader_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
-    volumes:
-      - ./settings/services-dev/uploader_service_appsettings.json:/app/appsettings.json
+    command: "./start.sh ml-uploader-service dev"
     stdin_open: true
     logging:
       driver: "json-file"
@@ -91,38 +91,34 @@ services:
     <<: *x-common
     container_name: ml_track_sync_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    command: "./start.sh ml-track-sync-service dev"
     image: medialibrary-content-services
-    volumes:
-     - ./settings/services-dev/track_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
       options:
         max-size: "20m"
         max-file: "10"
+
   ml_playout_service:
     <<: *x-common
     container_name: ml_playout_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    command: "./start.sh ml-playout-service dev"
     image: medialibrary-content-services
-    volumes:
-     - ./settings/services-dev/playout_service_appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
       options:
         max-size: "20m"
         max-file: "10"
+
   ml_master_ws_sync_service:
     <<: *x-common
     container_name: ml_master_ws_sync_service
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    command: "./start.sh ml-master-ws-sync-service dev"
     restart: unless-stopped
     image: medialibrary-content-services
-    volumes:
-     - ./settings/services-dev/master_ws_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
@@ -134,10 +130,8 @@ services:
     <<: *x-common
     container_name: ml_workspace_lib_sync_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    command: "./start.sh ml-workspace-lib-sync-service dev"
     image: medialibrary-content-services
-    volumes:
-     - ./settings/services-dev/workspace_lib_sync_service_appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
@@ -149,26 +143,23 @@ services:
     <<: *x-common
     container_name: ml_nighttime_service
     restart: unless-stopped
-    command: "dotnet MusicManager.SyncService/MusicManager.SyncService.dll"
+    command: "./start.sh ml-nighttime-service dev"
     image: medialibrary-content-services
-    volumes:
-     - ./settings/services-dev/nighttime_service_appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
       options:
         max-size: "20m"
         max-file: "10"
+
   ml_content_api:
     <<: *x-common
     container_name: ml_content_api
-    command: "dotnet MusicManager.API/MusicManager.API.dll"
+    command: "./start.sh ml-content-api dev"
     restart: unless-stopped
     image: medialibrary-content-services
     ports: 
       - "5001:5001"
-    volumes:
-      - ./settings/contentapi-dev/appsettings.json:/app/appsettings.json
     stdin_open: true
     logging:
       driver: "json-file"
