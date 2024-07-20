@@ -1,0 +1,19 @@
+version = 0.1
+[review]
+[review.deploy]
+[review.deploy.parameters]
+s3_bucket="aws-sam-cli-managed-default-samclisourcebucket-zaironuw5s8s"
+s3_prefix="musicbox-bbc-cs"
+region="eu-west-2"
+confirm_changeset=false
+capabilities="CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
+tags="info:creator=argiris.papaefstathiou info:maintainer=argiris.papaefstathiou info:product=musicbox-bbc-cs info:env=dev map-migrated=migNMR7ZIQT0Q"
+[integration]
+[integration.deploy]
+[integration.deploy.parameters]
+s3_bucket="aws-sam-cli-managed-default-samclisourcebucket-zaironuw5s8s"
+s3_prefix="musicbox-bbc-cs"
+region="eu-west-2"
+confirm_changeset=false
+capabilities="CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND"
+tags="info:creator=argiris.papaefstathiou info:maintainer=argiris.papaefstathiou info:product=musicbox-bbc-cs info:env=integration map-migrated=migNMR7ZIQT0Q"
