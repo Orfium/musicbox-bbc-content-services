@@ -10,7 +10,7 @@ help:
 
 docker-build:
 	export CODEARTIFACT_TOKEN=$(shell aws-vault exec musicboxdev@smadl1 -- aws codeartifact get-authorization-token --region eu-west-2 --domain musicbox --domain-owner 462711359312 --duration-seconds 900 --query authorizationToken --output text) && \
-	docker buildx bake
+	docker buildx bake --set *.args.CACHEBUST=$$CODEARTIFACT_TOKEN
 
 nuget-config-code-artifact:
 	(dotnet nuget remove source musicbox/mbmt-nuget || true) && \

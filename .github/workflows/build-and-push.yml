@@ -77,6 +77,11 @@ jobs:
         with:
           registry: ${{ steps.extract-deployment-envs.outputs.ECR_REGISTRY }}
 
+      - name: Compute Codeartifact token hash
+        if: "${{ inputs.codeartifact_encrypted_token != '' }}"
+        id: compute-hash
+        run: echo "HASH=$(echo -n ${{ inputs.codeartifact_encrypted_token }} | sha256sum | cut -d ' ' -f 1)" >> $GITHUB_OUTPUT
+
       - name: Decrypt Codeartifact token
         if: "${{ inputs.codeartifact_encrypted_token != '' }}"
         run: |
@@ -95,6 +100,8 @@ jobs:
           cache-from: ${{ steps.extract-deployment-envs.outputs.ECR_REGISTRY }}:stable
           cache-to: type=registry,ref=${{ steps.extract-deployment-envs.outputs.ECR_REGISTRY }}:stable,mode=max,image-manifest=true,oci-mediatypes=true
           target: ${{ inputs.docker_target }}
+          build-args: |
+            CACHEBUST=${{ steps.compute-hash.outputs.HASH }}
           secrets: |  # pragma: allowlist secret
             CODEARTIFACT_TOKEN=${{ env.CODEARTIFACT_TOKEN }}
 
@@ -108,6 +115,8 @@ jobs:
           cache-from: ${{ steps.extract-deployment-envs.outputs.ECR_REGISTRY }}:latest
           cache-to: type=registry,ref=${{ steps.extract-deployment-envs.outputs.ECR_REGISTRY }}:latest,mode=max,image-manifest=true,oci-mediatypes=true
           target: ${{ inputs.docker_target }}
+          build-args: |
+            CACHEBUST=${{ steps.compute-hash.outputs.HASH }}
           secrets: |  # pragma: allowlist secret
             CODEARTIFACT_TOKEN=${{ env.CODEARTIFACT_TOKEN }}
 

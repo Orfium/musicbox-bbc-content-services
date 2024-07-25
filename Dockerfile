@@ -29,8 +29,10 @@ COPY MusicManager.Playout/MusicManager.Playout.csproj ./MusicManager.Playout/Mus
 COPY MusicManager.Infrastructure/MusicManager.Infrastructure.csproj ./MusicManager.Infrastructure/MusicManager.Infrastructure.csproj
 COPY MusicManager.InitDB/MusicManager.InitDB.csproj ./MusicManager.InitDB/MusicManager.InitDB.csproj
 
+# Use a build argument to invalidate the cache
+ARG CACHEBUST=1
 # configure nuget with code artifact source
-RUN --mount=type=secret,id=CODEARTIFACT_TOKEN /configure-nuget
+RUN --mount=type=secret,id=CODEARTIFACT_TOKEN /configure-nuget && echo "Cache busting: $CACHEBUST"
 
 # Restore solution
 RUN dotnet restore "MusicManager.API.sln"
