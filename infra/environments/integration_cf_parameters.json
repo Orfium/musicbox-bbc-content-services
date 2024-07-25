@@ -1,0 +1,22 @@
+{
+    "Parameters": {
+      "ImageUri": "462711359312.dkr.ecr.eu-west-2.amazonaws.com/musicbox-bbc-content-services/app:latest",
+      "HostedZoneId": "Z0535015LYHLELYBMCVK",
+      "HostedZoneName": "musicbox.orfium.com",
+      "DBName": "musicbox_bbc_content_services_db",
+      "DeletionProtection": "false",
+      "DBDeletionPolicy": "Delete",
+      "DBUpdateReplacePolicy": "Delete",
+      "BastionHostEnabled": "true",
+      "EnableDatadog": "false",
+      "DBEngineVersion": "14.9",
+      "ApplicationSecretArn": "arn:aws:secretsmanager:eu-west-2:462711359312:secret:musicbox-bbc-content-services-secret-4QZ7do",
+      "ApiDesiredCount": "1",
+      "MLNightTimeServiceDesiredCount": "1",
+      "MLWorkspaceLibSyncServiceDesiredCount": "1",
+      "MLMasterWsSyncServiceDesiredCount": "1",
+      "MLPlayoutServiceDesiredCount": "1",
+      "MLTrackSyncServiceDesiredCount": "1",
+      "MLUploaderServiceDesiredCount": "1"
+    }
+}
