@@ -1,6 +1,4 @@
---
 -- PostgreSQL database dump
---
 
 -- Dumped from database version 12.9 (Ubuntu 12.9-1.pgdg18.04+1)
 -- Dumped by pg_dump version 12.9 (Ubuntu 12.9-1.pgdg18.04+1)
@@ -16,45 +14,26 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: charts; Type: SCHEMA; Schema: -; Owner: admin
---
 
 CREATE SCHEMA charts;
 
 
-ALTER SCHEMA charts OWNER TO admin;
 
---
--- Name: log; Type: SCHEMA; Schema: -; Owner: admin
---
 
 CREATE SCHEMA log;
 
 
-ALTER SCHEMA log OWNER TO admin;
 
---
--- Name: playout; Type: SCHEMA; Schema: -; Owner: admin
---
 
 CREATE SCHEMA playout;
 
 
-ALTER SCHEMA playout OWNER TO admin;
 
---
--- Name: staging; Type: SCHEMA; Schema: -; Owner: admin
---
 
 CREATE SCHEMA staging;
 
 
-ALTER SCHEMA staging OWNER TO admin;
 
---
--- Name: fn_search_elastic_album_changes(integer, uuid); Type: FUNCTION; Schema: log; Owner: admin
---
 
 CREATE FUNCTION log.fn_search_elastic_album_changes(pagesize integer, orgworkspaceid uuid) RETURNS TABLE(document_id uuid, album_id uuid, metadata json, album_org_data json, workspace_id uuid, library_id uuid, workspace_name character varying, library_name character varying, library_notes character varying, restricted boolean, archived boolean, deleted boolean, ws_type character varying)
     LANGUAGE plpgsql
@@ -75,11 +54,7 @@ END;
 $$;
 
 
-ALTER FUNCTION log.fn_search_elastic_album_changes(pagesize integer, orgworkspaceid uuid) OWNER TO admin;
 
---
--- Name: fn_search_elastic_track_changes(integer, integer, uuid); Type: FUNCTION; Schema: log; Owner: admin
---
 
 CREATE FUNCTION log.fn_search_elastic_track_changes(pageno integer, pagesize integer, orgworkspaceid uuid) RETURNS TABLE(id bigint, document_id uuid, track_org_data json, dh_version_id uuid, metadata json, date_created timestamp without time zone, workspace_name character varying, library_name character varying, external_identifiers json, deleted boolean, source_ref character varying, ext_sys_ref character varying, ws_type character varying, archived boolean, edit_track_metadata json, edit_album_metadata json, pre_release boolean, org_id character varying, restricted boolean, album_metadata json, album_id uuid)
     LANGUAGE plpgsql
@@ -106,11 +81,7 @@ END;
 $$;
 
 
-ALTER FUNCTION log.fn_search_elastic_track_changes(pageno integer, pagesize integer, orgworkspaceid uuid) OWNER TO admin;
 
---
--- Name: fn_lib_change_trigger(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_lib_change_trigger() RETURNS trigger
     LANGUAGE plpgsql
@@ -175,11 +146,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_lib_change_trigger() OWNER TO admin;
 
---
--- Name: fn_sync_track(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_sync_track(OUT status integer) RETURNS integer
     LANGUAGE plpgsql
@@ -240,11 +207,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_sync_track(OUT status integer) OWNER TO admin;
 
---
--- Name: fn_trigger_sync_album(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_trigger_sync_album() RETURNS trigger
     LANGUAGE plpgsql
@@ -295,11 +258,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_trigger_sync_album() OWNER TO admin;
 
---
--- Name: fn_trigger_sync_track(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_trigger_sync_track() RETURNS trigger
     LANGUAGE plpgsql
@@ -358,11 +317,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_trigger_sync_track() OWNER TO admin;
 
---
--- Name: fn_update_album(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_update_album() RETURNS trigger
     LANGUAGE plpgsql
@@ -387,11 +342,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_update_album() OWNER TO admin;
 
---
--- Name: fn_update_elastic_album_change(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_update_elastic_album_change() RETURNS trigger
     LANGUAGE plpgsql
@@ -426,11 +377,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_update_elastic_album_change() OWNER TO admin;
 
---
--- Name: fn_update_elastic_track_change(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_update_elastic_track_change() RETURNS trigger
     LANGUAGE plpgsql
@@ -461,11 +408,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_update_elastic_track_change() OWNER TO admin;
 
---
--- Name: fn_update_tag(uuid, uuid, character varying); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_update_tag(_tag_type_id uuid, _track_id uuid, _tag_list character varying) RETURNS TABLE(track_id uuid, tag uuid, tag_with_type character varying)
     LANGUAGE plpgsql
@@ -502,11 +445,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_update_tag(_tag_type_id uuid, _track_id uuid, _tag_list character varying) OWNER TO admin;
 
---
--- Name: fn_ws_change_trigger(); Type: FUNCTION; Schema: public; Owner: admin
---
 
 CREATE FUNCTION public.fn_ws_change_trigger() RETURNS trigger
     LANGUAGE plpgsql
@@ -577,11 +516,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.fn_ws_change_trigger() OWNER TO admin;
 
---
--- Name: sp_sync_library(integer); Type: PROCEDURE; Schema: public; Owner: admin
---
 
 CREATE PROCEDURE public.sp_sync_library(p_user_id integer)
     LANGUAGE plpgsql
@@ -698,11 +633,7 @@ END
 $$;
 
 
-ALTER PROCEDURE public.sp_sync_library(p_user_id integer) OWNER TO admin;
 
---
--- Name: sp_sync_workspace(integer); Type: PROCEDURE; Schema: public; Owner: admin
---
 
 CREATE PROCEDURE public.sp_sync_workspace(p_user_id integer)
     LANGUAGE plpgsql
@@ -811,15 +742,11 @@ END
 $$;
 
 
-ALTER PROCEDURE public.sp_sync_workspace(p_user_id integer) OWNER TO admin;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
---
--- Name: chart_master_albums; Type: TABLE; Schema: charts; Owner: admin
---
 
 CREATE TABLE charts.chart_master_albums (
     master_id uuid NOT NULL,
@@ -837,11 +764,7 @@ CREATE TABLE charts.chart_master_albums (
 );
 
 
-ALTER TABLE charts.chart_master_albums OWNER TO admin;
 
---
--- Name: chart_master_tracks; Type: TABLE; Schema: charts; Owner: admin
---
 
 CREATE TABLE charts.chart_master_tracks (
     master_id uuid NOT NULL,
@@ -859,11 +782,7 @@ CREATE TABLE charts.chart_master_tracks (
 );
 
 
-ALTER TABLE charts.chart_master_tracks OWNER TO admin;
 
---
--- Name: chart_sync_summary; Type: TABLE; Schema: charts; Owner: admin
---
 
 CREATE TABLE charts.chart_sync_summary (
     id bigint NOT NULL,
@@ -875,11 +794,7 @@ CREATE TABLE charts.chart_sync_summary (
 );
 
 
-ALTER TABLE charts.chart_sync_summary OWNER TO admin;
 
---
--- Name: chart_sync_summary_id_seq; Type: SEQUENCE; Schema: charts; Owner: admin
---
 
 CREATE SEQUENCE charts.chart_sync_summary_id_seq
     START WITH 1
@@ -889,18 +804,11 @@ CREATE SEQUENCE charts.chart_sync_summary_id_seq
     CACHE 1;
 
 
-ALTER TABLE charts.chart_sync_summary_id_seq OWNER TO admin;
 
---
--- Name: chart_sync_summary_id_seq; Type: SEQUENCE OWNED BY; Schema: charts; Owner: admin
---
 
 ALTER SEQUENCE charts.chart_sync_summary_id_seq OWNED BY charts.chart_sync_summary.id;
 
 
---
--- Name: elastic_album_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.elastic_album_change (
     document_id uuid NOT NULL,
@@ -916,11 +824,7 @@ CREATE TABLE log.elastic_album_change (
 );
 
 
-ALTER TABLE log.elastic_album_change OWNER TO admin;
 
---
--- Name: elastic_track_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.elastic_track_change (
     id bigint NOT NULL,
@@ -938,11 +842,7 @@ CREATE TABLE log.elastic_track_change (
 );
 
 
-ALTER TABLE log.elastic_track_change OWNER TO admin;
 
---
--- Name: elastic_track_change_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.elastic_track_change_id_seq
     START WITH 1
@@ -952,18 +852,11 @@ CREATE SEQUENCE log.elastic_track_change_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.elastic_track_change_id_seq OWNER TO admin;
 
---
--- Name: elastic_track_change_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.elastic_track_change_id_seq OWNED BY log.elastic_track_change.id;
 
 
---
--- Name: log_album_api_calls; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_album_api_calls (
     id bigint NOT NULL,
@@ -979,11 +872,7 @@ CREATE TABLE log.log_album_api_calls (
 );
 
 
-ALTER TABLE log.log_album_api_calls OWNER TO admin;
 
---
--- Name: log_album_api_calls_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_album_api_calls_id_seq
     START WITH 1
@@ -993,18 +882,11 @@ CREATE SEQUENCE log.log_album_api_calls_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_album_api_calls_id_seq OWNER TO admin;
 
---
--- Name: log_album_api_calls_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_album_api_calls_id_seq OWNED BY log.log_album_api_calls.id;
 
 
---
--- Name: log_album_api_results; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_album_api_results (
     id bigint NOT NULL,
@@ -1022,11 +904,7 @@ CREATE TABLE log.log_album_api_results (
 );
 
 
-ALTER TABLE log.log_album_api_results OWNER TO admin;
 
---
--- Name: log_album_api_results_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_album_api_results_id_seq
     START WITH 1
@@ -1036,18 +914,11 @@ CREATE SEQUENCE log.log_album_api_results_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_album_api_results_id_seq OWNER TO admin;
 
---
--- Name: log_album_api_results_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_album_api_results_id_seq OWNED BY log.log_album_api_results.id;
 
 
---
--- Name: log_album_sync_session; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_album_sync_session (
     session_id bigint NOT NULL,
@@ -1062,11 +933,7 @@ CREATE TABLE log.log_album_sync_session (
 );
 
 
-ALTER TABLE log.log_album_sync_session OWNER TO admin;
 
---
--- Name: log_album_sync_session_session_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_album_sync_session_session_id_seq
     START WITH 1
@@ -1076,18 +943,11 @@ CREATE SEQUENCE log.log_album_sync_session_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_album_sync_session_session_id_seq OWNER TO admin;
 
---
--- Name: log_album_sync_session_session_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_album_sync_session_session_id_seq OWNED BY log.log_album_sync_session.session_id;
 
 
---
--- Name: log_elastic_track_changes; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_elastic_track_changes (
     id bigint NOT NULL,
@@ -1102,11 +962,7 @@ CREATE TABLE log.log_elastic_track_changes (
 );
 
 
-ALTER TABLE log.log_elastic_track_changes OWNER TO admin;
 
---
--- Name: log_elastic_track_changes_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_elastic_track_changes_id_seq
     START WITH 1
@@ -1116,18 +972,11 @@ CREATE SEQUENCE log.log_elastic_track_changes_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_elastic_track_changes_id_seq OWNER TO admin;
 
---
--- Name: log_elastic_track_changes_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_elastic_track_changes_id_seq OWNED BY log.log_elastic_track_changes.id;
 
 
---
--- Name: log_library_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_library_change (
     libch_id bigint NOT NULL,
@@ -1139,11 +988,7 @@ CREATE TABLE log.log_library_change (
 );
 
 
-ALTER TABLE log.log_library_change OWNER TO admin;
 
---
--- Name: log_library_change_libch_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_library_change_libch_id_seq
     START WITH 1
@@ -1153,18 +998,11 @@ CREATE SEQUENCE log.log_library_change_libch_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_library_change_libch_id_seq OWNER TO admin;
 
---
--- Name: log_library_change_libch_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_library_change_libch_id_seq OWNED BY log.log_library_change.libch_id;
 
 
---
--- Name: log_prs_search_time; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_prs_search_time (
     id bigint NOT NULL,
@@ -1176,11 +1014,7 @@ CREATE TABLE log.log_prs_search_time (
 );
 
 
-ALTER TABLE log.log_prs_search_time OWNER TO admin;
 
---
--- Name: log_prs_search_time_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_prs_search_time_id_seq
     START WITH 1
@@ -1190,18 +1024,11 @@ CREATE SEQUENCE log.log_prs_search_time_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_prs_search_time_id_seq OWNER TO admin;
 
---
--- Name: log_prs_search_time_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_prs_search_time_id_seq OWNED BY log.log_prs_search_time.id;
 
 
---
--- Name: log_sync_time; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_sync_time (
     id bigint NOT NULL,
@@ -1235,11 +1062,7 @@ CREATE TABLE log.log_sync_time (
 );
 
 
-ALTER TABLE log.log_sync_time OWNER TO admin;
 
---
--- Name: log_sync_time_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_sync_time_id_seq
     START WITH 1
@@ -1249,18 +1072,11 @@ CREATE SEQUENCE log.log_sync_time_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_sync_time_id_seq OWNER TO admin;
 
---
--- Name: log_sync_time_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_sync_time_id_seq OWNED BY log.log_sync_time.id;
 
 
---
--- Name: log_track_api_calls; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_track_api_calls (
     id bigint NOT NULL,
@@ -1276,11 +1092,7 @@ CREATE TABLE log.log_track_api_calls (
 );
 
 
-ALTER TABLE log.log_track_api_calls OWNER TO admin;
 
---
--- Name: log_track_api_calls_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_track_api_calls_id_seq
     START WITH 1
@@ -1290,18 +1102,11 @@ CREATE SEQUENCE log.log_track_api_calls_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_track_api_calls_id_seq OWNER TO admin;
 
---
--- Name: log_track_api_calls_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_track_api_calls_id_seq OWNED BY log.log_track_api_calls.id;
 
 
---
--- Name: log_track_api_results_20240301; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_track_api_results_20240301 (
     id bigint NOT NULL,
@@ -1318,11 +1123,7 @@ CREATE TABLE log.log_track_api_results_20240301 (
 );
 
 
-ALTER TABLE log.log_track_api_results_20240301 OWNER TO admin;
 
---
--- Name: log_track_api_results_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_track_api_results_id_seq
     START WITH 1
@@ -1332,18 +1133,11 @@ CREATE SEQUENCE log.log_track_api_results_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_track_api_results_id_seq OWNER TO admin;
 
---
--- Name: log_track_api_results_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_track_api_results_id_seq OWNED BY log.log_track_api_results_20240301.id;
 
 
---
--- Name: log_track_api_results; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_track_api_results (
     id bigint DEFAULT nextval('log.log_track_api_results_id_seq'::regclass) NOT NULL,
@@ -1360,11 +1154,7 @@ CREATE TABLE log.log_track_api_results (
 );
 
 
-ALTER TABLE log.log_track_api_results OWNER TO admin;
 
---
--- Name: log_track_index_error; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_track_index_error (
     id integer NOT NULL,
@@ -1374,11 +1164,7 @@ CREATE TABLE log.log_track_index_error (
 );
 
 
-ALTER TABLE log.log_track_index_error OWNER TO admin;
 
---
--- Name: log_track_index_error_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_track_index_error_id_seq
     AS integer
@@ -1389,18 +1175,11 @@ CREATE SEQUENCE log.log_track_index_error_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_track_index_error_id_seq OWNER TO admin;
 
---
--- Name: log_track_index_error_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_track_index_error_id_seq OWNED BY log.log_track_index_error.id;
 
 
---
--- Name: log_track_sync_session; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_track_sync_session (
     session_id integer NOT NULL,
@@ -1415,11 +1194,7 @@ CREATE TABLE log.log_track_sync_session (
 );
 
 
-ALTER TABLE log.log_track_sync_session OWNER TO admin;
 
---
--- Name: log_track_sync_session_session_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_track_sync_session_session_id_seq
     AS integer
@@ -1430,18 +1205,11 @@ CREATE SEQUENCE log.log_track_sync_session_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_track_sync_session_session_id_seq OWNER TO admin;
 
---
--- Name: log_track_sync_session_session_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_track_sync_session_session_id_seq OWNED BY log.log_track_sync_session.session_id;
 
 
---
--- Name: log_user_action; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_user_action (
     id bigint NOT NULL,
@@ -1459,11 +1227,7 @@ CREATE TABLE log.log_user_action (
 );
 
 
-ALTER TABLE log.log_user_action OWNER TO admin;
 
---
--- Name: log_user_action_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_user_action_id_seq
     START WITH 1
@@ -1473,18 +1237,11 @@ CREATE SEQUENCE log.log_user_action_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_user_action_id_seq OWNER TO admin;
 
---
--- Name: log_user_action_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_user_action_id_seq OWNED BY log.log_user_action.id;
 
 
---
--- Name: log_workspace_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_workspace_change (
     wsch_id bigint NOT NULL,
@@ -1496,11 +1253,7 @@ CREATE TABLE log.log_workspace_change (
 );
 
 
-ALTER TABLE log.log_workspace_change OWNER TO admin;
 
---
--- Name: log_workspace_change_wsch_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_workspace_change_wsch_id_seq
     START WITH 1
@@ -1510,18 +1263,11 @@ CREATE SEQUENCE log.log_workspace_change_wsch_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_workspace_change_wsch_id_seq OWNER TO admin;
 
---
--- Name: log_workspace_change_wsch_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_workspace_change_wsch_id_seq OWNED BY log.log_workspace_change.wsch_id;
 
 
---
--- Name: log_ws_lib_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_ws_lib_change (
     ws_lib_change_id bigint NOT NULL,
@@ -1534,11 +1280,7 @@ CREATE TABLE log.log_ws_lib_change (
 );
 
 
-ALTER TABLE log.log_ws_lib_change OWNER TO admin;
 
---
--- Name: log_ws_lib_status_change; Type: TABLE; Schema: log; Owner: admin
---
 
 CREATE TABLE log.log_ws_lib_status_change (
     id bigint NOT NULL,
@@ -1552,11 +1294,7 @@ CREATE TABLE log.log_ws_lib_status_change (
 );
 
 
-ALTER TABLE log.log_ws_lib_status_change OWNER TO admin;
 
---
--- Name: log_ws_lib_status_change_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.log_ws_lib_status_change_id_seq
     START WITH 1
@@ -1566,18 +1304,11 @@ CREATE SEQUENCE log.log_ws_lib_status_change_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.log_ws_lib_status_change_id_seq OWNER TO admin;
 
---
--- Name: log_ws_lib_status_change_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.log_ws_lib_status_change_id_seq OWNED BY log.log_ws_lib_status_change.id;
 
 
---
--- Name: ws_lib_change_ws_lib_change_id_seq; Type: SEQUENCE; Schema: log; Owner: admin
---
 
 CREATE SEQUENCE log.ws_lib_change_ws_lib_change_id_seq
     START WITH 1
@@ -1587,18 +1318,11 @@ CREATE SEQUENCE log.ws_lib_change_ws_lib_change_id_seq
     CACHE 1;
 
 
-ALTER TABLE log.ws_lib_change_ws_lib_change_id_seq OWNER TO admin;
 
---
--- Name: ws_lib_change_ws_lib_change_id_seq; Type: SEQUENCE OWNED BY; Schema: log; Owner: admin
---
 
 ALTER SEQUENCE log.ws_lib_change_ws_lib_change_id_seq OWNED BY log.log_ws_lib_change.ws_lib_change_id;
 
 
---
--- Name: playout_response; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.playout_response (
     response_id bigint NOT NULL,
@@ -1610,11 +1334,7 @@ CREATE TABLE playout.playout_response (
 );
 
 
-ALTER TABLE playout.playout_response OWNER TO admin;
 
---
--- Name: playout_response_response_id_seq; Type: SEQUENCE; Schema: playout; Owner: admin
---
 
 CREATE SEQUENCE playout.playout_response_response_id_seq
     START WITH 1
@@ -1624,18 +1344,11 @@ CREATE SEQUENCE playout.playout_response_response_id_seq
     CACHE 1;
 
 
-ALTER TABLE playout.playout_response_response_id_seq OWNER TO admin;
 
---
--- Name: playout_response_response_id_seq; Type: SEQUENCE OWNED BY; Schema: playout; Owner: admin
---
 
 ALTER SEQUENCE playout.playout_response_response_id_seq OWNED BY playout.playout_response.response_id;
 
 
---
--- Name: playout_response_status; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.playout_response_status (
     id bigint NOT NULL,
@@ -1644,11 +1357,7 @@ CREATE TABLE playout.playout_response_status (
 );
 
 
-ALTER TABLE playout.playout_response_status OWNER TO admin;
 
---
--- Name: playout_response_status_id_seq; Type: SEQUENCE; Schema: playout; Owner: admin
---
 
 CREATE SEQUENCE playout.playout_response_status_id_seq
     START WITH 1
@@ -1658,18 +1367,11 @@ CREATE SEQUENCE playout.playout_response_status_id_seq
     CACHE 1;
 
 
-ALTER TABLE playout.playout_response_status_id_seq OWNER TO admin;
 
---
--- Name: playout_response_status_id_seq; Type: SEQUENCE OWNED BY; Schema: playout; Owner: admin
---
 
 ALTER SEQUENCE playout.playout_response_status_id_seq OWNED BY playout.playout_response_status.id;
 
 
---
--- Name: playout_session; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.playout_session (
     id integer NOT NULL,
@@ -1693,11 +1395,7 @@ CREATE TABLE playout.playout_session (
 );
 
 
-ALTER TABLE playout.playout_session OWNER TO admin;
 
---
--- Name: playout_session_id_seq; Type: SEQUENCE; Schema: playout; Owner: admin
---
 
 CREATE SEQUENCE playout.playout_session_id_seq
     AS integer
@@ -1708,18 +1406,11 @@ CREATE SEQUENCE playout.playout_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE playout.playout_session_id_seq OWNER TO admin;
 
---
--- Name: playout_session_id_seq; Type: SEQUENCE OWNED BY; Schema: playout; Owner: admin
---
 
 ALTER SEQUENCE playout.playout_session_id_seq OWNED BY playout.playout_session.id;
 
 
---
--- Name: radio_stations; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.radio_stations (
     id uuid NOT NULL,
@@ -1734,11 +1425,7 @@ CREATE TABLE playout.radio_stations (
 );
 
 
-ALTER TABLE playout.radio_stations OWNER TO admin;
 
---
--- Name: org_user; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.org_user (
     user_id integer NOT NULL,
@@ -1752,11 +1439,7 @@ CREATE TABLE public.org_user (
 );
 
 
-ALTER TABLE public.org_user OWNER TO admin;
 
---
--- Name: playout_session_search; Type: VIEW; Schema: playout; Owner: admin
---
 
 CREATE VIEW playout.playout_session_search AS
  SELECT ps.id,
@@ -1776,11 +1459,7 @@ CREATE VIEW playout.playout_session_search AS
      LEFT JOIN playout.radio_stations rs ON ((ps.station_id = rs.id)));
 
 
-ALTER TABLE playout.playout_session_search OWNER TO admin;
 
---
--- Name: playout_session_tracks; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.playout_session_tracks (
     id bigint NOT NULL,
@@ -1806,11 +1485,7 @@ CREATE TABLE playout.playout_session_tracks (
 );
 
 
-ALTER TABLE playout.playout_session_tracks OWNER TO admin;
 
---
--- Name: playout_session_tracks_id_seq; Type: SEQUENCE; Schema: playout; Owner: admin
---
 
 CREATE SEQUENCE playout.playout_session_tracks_id_seq
     START WITH 1
@@ -1820,18 +1495,11 @@ CREATE SEQUENCE playout.playout_session_tracks_id_seq
     CACHE 1;
 
 
-ALTER TABLE playout.playout_session_tracks_id_seq OWNER TO admin;
 
---
--- Name: playout_session_tracks_id_seq; Type: SEQUENCE OWNED BY; Schema: playout; Owner: admin
---
 
 ALTER SEQUENCE playout.playout_session_tracks_id_seq OWNED BY playout.playout_session_tracks.id;
 
 
---
--- Name: radio_categories; Type: TABLE; Schema: playout; Owner: admin
---
 
 CREATE TABLE playout.radio_categories (
     category_id integer NOT NULL,
@@ -1839,11 +1507,7 @@ CREATE TABLE playout.radio_categories (
 );
 
 
-ALTER TABLE playout.radio_categories OWNER TO admin;
 
---
--- Name: album_org; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.album_org (
     id uuid NOT NULL,
@@ -1876,11 +1540,7 @@ CREATE TABLE public.album_org (
 );
 
 
-ALTER TABLE public.album_org OWNER TO admin;
 
---
--- Name: c_tag; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.c_tag (
     id integer NOT NULL,
@@ -1903,11 +1563,7 @@ CREATE TABLE public.c_tag (
 );
 
 
-ALTER TABLE public.c_tag OWNER TO admin;
 
---
--- Name: c_tag_extended; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.c_tag_extended (
     id integer NOT NULL,
@@ -1926,11 +1582,7 @@ CREATE TABLE public.c_tag_extended (
 );
 
 
-ALTER TABLE public.c_tag_extended OWNER TO admin;
 
---
--- Name: c_tag_extended_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.c_tag_extended_id_seq
     AS integer
@@ -1941,18 +1593,11 @@ CREATE SEQUENCE public.c_tag_extended_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.c_tag_extended_id_seq OWNER TO admin;
 
---
--- Name: c_tag_extended_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.c_tag_extended_id_seq OWNED BY public.c_tag_extended.id;
 
 
---
--- Name: c_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.c_tag_id_seq
     AS integer
@@ -1963,18 +1608,11 @@ CREATE SEQUENCE public.c_tag_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.c_tag_id_seq OWNER TO admin;
 
---
--- Name: c_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.c_tag_id_seq OWNED BY public.c_tag.id;
 
 
---
--- Name: c_tag_index_status; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.c_tag_index_status (
     type character varying NOT NULL,
@@ -1984,11 +1622,7 @@ CREATE TABLE public.c_tag_index_status (
 );
 
 
-ALTER TABLE public.c_tag_index_status OWNER TO admin;
 
---
--- Name: cleansed_tag_track; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.cleansed_tag_track (
     id bigint NOT NULL,
@@ -2007,11 +1641,7 @@ CREATE TABLE public.cleansed_tag_track (
 );
 
 
-ALTER TABLE public.cleansed_tag_track OWNER TO admin;
 
---
--- Name: cleansed_tag_track_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.cleansed_tag_track_id_seq
     START WITH 1
@@ -2021,18 +1651,11 @@ CREATE SEQUENCE public.cleansed_tag_track_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cleansed_tag_track_id_seq OWNER TO admin;
 
---
--- Name: cleansed_tag_track_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.cleansed_tag_track_id_seq OWNED BY public.cleansed_tag_track.id;
 
 
---
--- Name: ctag_extended_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.ctag_extended_search AS
  SELECT cte.id,
@@ -2055,11 +1678,7 @@ CREATE VIEW public.ctag_extended_search AS
      LEFT JOIN public.org_user c_ou ON ((cte.created_by = c_ou.user_id)));
 
 
-ALTER TABLE public.ctag_extended_search OWNER TO admin;
 
---
--- Name: ctag_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.ctag_search AS
  SELECT ct.id,
@@ -2081,11 +1700,7 @@ CREATE VIEW public.ctag_search AS
      LEFT JOIN public.org_user c_ou ON ((ct.created_by = c_ou.user_id)));
 
 
-ALTER TABLE public.ctag_search OWNER TO admin;
 
---
--- Name: dh_status; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.dh_status (
     status_code character varying(5),
@@ -2093,11 +1708,7 @@ CREATE TABLE public.dh_status (
 );
 
 
-ALTER TABLE public.dh_status OWNER TO admin;
 
---
--- Name: library; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.library (
     library_id uuid NOT NULL,
@@ -2117,11 +1728,7 @@ CREATE TABLE public.library (
 );
 
 
-ALTER TABLE public.library OWNER TO admin;
 
---
--- Name: library_org; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.library_org (
     org_library_id uuid NOT NULL,
@@ -2144,11 +1751,7 @@ CREATE TABLE public.library_org (
 );
 
 
-ALTER TABLE public.library_org OWNER TO admin;
 
---
--- Name: workspace; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.workspace (
     workspace_id uuid NOT NULL,
@@ -2174,11 +1777,7 @@ CREATE TABLE public.workspace (
 );
 
 
-ALTER TABLE public.workspace OWNER TO admin;
 
---
--- Name: library_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.library_search AS
  SELECT (l.library_id)::text AS id,
@@ -2203,11 +1802,7 @@ CREATE VIEW public.library_search AS
   WHERE (l.archived = false);
 
 
-ALTER TABLE public.library_search OWNER TO admin;
 
---
--- Name: library_search_ml_admin; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.library_search_ml_admin AS
  SELECT (l.library_id)::text AS id,
@@ -2234,11 +1829,7 @@ CREATE VIEW public.library_search_ml_admin AS
   WHERE ((l.archived = false) AND (lo.ml_status <> 5));
 
 
-ALTER TABLE public.library_search_ml_admin OWNER TO admin;
 
---
--- Name: member_label; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.member_label (
     id integer NOT NULL,
@@ -2253,11 +1844,7 @@ CREATE TABLE public.member_label (
 );
 
 
-ALTER TABLE public.member_label OWNER TO admin;
 
---
--- Name: member_label_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.member_label_id_seq
     AS integer
@@ -2268,18 +1855,11 @@ CREATE SEQUENCE public.member_label_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.member_label_id_seq OWNER TO admin;
 
---
--- Name: member_label_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.member_label_id_seq OWNED BY public.member_label.id;
 
 
---
--- Name: ml_master_album; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.ml_master_album (
     album_id uuid NOT NULL,
@@ -2296,11 +1876,7 @@ CREATE TABLE public.ml_master_album (
 );
 
 
-ALTER TABLE public.ml_master_album OWNER TO admin;
 
---
--- Name: ml_master_track; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.ml_master_track (
     track_id uuid NOT NULL,
@@ -2327,11 +1903,7 @@ CREATE TABLE public.ml_master_track (
 );
 
 
-ALTER TABLE public.ml_master_track OWNER TO admin;
 
---
--- Name: ml_status; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.ml_status (
     status_code character varying(5),
@@ -2339,11 +1911,7 @@ CREATE TABLE public.ml_status (
 );
 
 
-ALTER TABLE public.ml_status OWNER TO admin;
 
---
--- Name: org_exclude; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.org_exclude (
     id integer NOT NULL,
@@ -2355,11 +1923,7 @@ CREATE TABLE public.org_exclude (
 );
 
 
-ALTER TABLE public.org_exclude OWNER TO admin;
 
---
--- Name: org_exclude_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.org_exclude_id_seq
     AS integer
@@ -2370,18 +1934,11 @@ CREATE SEQUENCE public.org_exclude_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.org_exclude_id_seq OWNER TO admin;
 
---
--- Name: org_exclude_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.org_exclude_id_seq OWNED BY public.org_exclude.id;
 
 
---
--- Name: org_track_version; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.org_track_version (
     ml_version_id uuid NOT NULL,
@@ -2399,11 +1956,7 @@ CREATE TABLE public.org_track_version (
 );
 
 
-ALTER TABLE public.org_track_version OWNER TO admin;
 
---
--- Name: org_workspace; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.org_workspace (
     id integer NOT NULL,
@@ -2415,11 +1968,7 @@ CREATE TABLE public.org_workspace (
 );
 
 
-ALTER TABLE public.org_workspace OWNER TO admin;
 
---
--- Name: org_workspace_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.org_workspace_id_seq
     AS integer
@@ -2430,18 +1979,11 @@ CREATE SEQUENCE public.org_workspace_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.org_workspace_id_seq OWNER TO admin;
 
---
--- Name: org_workspace_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.org_workspace_id_seq OWNED BY public.org_workspace.id;
 
 
---
--- Name: playout_session; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.playout_session (
     id integer NOT NULL,
@@ -2456,11 +1998,7 @@ CREATE TABLE public.playout_session (
 );
 
 
-ALTER TABLE public.playout_session OWNER TO admin;
 
---
--- Name: playout_session_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.playout_session_id_seq
     AS integer
@@ -2471,18 +2009,11 @@ CREATE SEQUENCE public.playout_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.playout_session_id_seq OWNER TO admin;
 
---
--- Name: playout_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.playout_session_id_seq OWNED BY public.playout_session.id;
 
 
---
--- Name: playout_session_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.playout_session_search AS
  SELECT table1.id,
@@ -2536,11 +2067,7 @@ CREATE VIEW public.playout_session_search AS
              LEFT JOIN playout.radio_stations rs ON ((ps.station_id = rs.id)))) table1;
 
 
-ALTER TABLE public.playout_session_search OWNER TO admin;
 
---
--- Name: playout_session_tracks; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.playout_session_tracks (
     id integer NOT NULL,
@@ -2560,11 +2087,7 @@ CREATE TABLE public.playout_session_tracks (
 );
 
 
-ALTER TABLE public.playout_session_tracks OWNER TO admin;
 
---
--- Name: playout_session_tracks_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.playout_session_tracks_id_seq
     AS integer
@@ -2575,18 +2098,11 @@ CREATE SEQUENCE public.playout_session_tracks_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.playout_session_tracks_id_seq OWNER TO admin;
 
---
--- Name: playout_session_tracks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.playout_session_tracks_id_seq OWNED BY public.playout_session_tracks.id;
 
 
---
--- Name: playout_tracks_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.playout_tracks_search AS
  SELECT pst.title,
@@ -2611,11 +2127,7 @@ CREATE VIEW public.playout_tracks_search AS
      LEFT JOIN playout.playout_session ps ON ((ps.id = pst.session_id)));
 
 
-ALTER TABLE public.playout_tracks_search OWNER TO admin;
 
---
--- Name: ppl_label_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.ppl_label_search AS
  SELECT ml.id,
@@ -2627,11 +2139,7 @@ CREATE VIEW public.ppl_label_search AS
    FROM public.member_label ml;
 
 
-ALTER TABLE public.ppl_label_search OWNER TO admin;
 
---
--- Name: prior_approval_work; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.prior_approval_work (
     id bigint NOT NULL,
@@ -2654,11 +2162,7 @@ CREATE TABLE public.prior_approval_work (
 );
 
 
-ALTER TABLE public.prior_approval_work OWNER TO admin;
 
---
--- Name: prior_approval_work_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.prior_approval_work_id_seq
     START WITH 1
@@ -2668,18 +2172,11 @@ CREATE SEQUENCE public.prior_approval_work_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.prior_approval_work_id_seq OWNER TO admin;
 
---
--- Name: prior_approval_work_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.prior_approval_work_id_seq OWNED BY public.prior_approval_work.id;
 
 
---
--- Name: radio_stations; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.radio_stations (
     id uuid NOT NULL,
@@ -2693,11 +2190,7 @@ CREATE TABLE public.radio_stations (
 );
 
 
-ALTER TABLE public.radio_stations OWNER TO admin;
 
---
--- Name: sync_info; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.sync_info (
     id integer NOT NULL,
@@ -2708,11 +2201,7 @@ CREATE TABLE public.sync_info (
 );
 
 
-ALTER TABLE public.sync_info OWNER TO admin;
 
---
--- Name: sync_info_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.sync_info_id_seq
     AS integer
@@ -2723,18 +2212,11 @@ CREATE SEQUENCE public.sync_info_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.sync_info_id_seq OWNER TO admin;
 
---
--- Name: sync_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.sync_info_id_seq OWNED BY public.sync_info.id;
 
 
---
--- Name: sync_status; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.sync_status (
     status_code character varying(5) NOT NULL,
@@ -2742,11 +2224,7 @@ CREATE TABLE public.sync_status (
 );
 
 
-ALTER TABLE public.sync_status OWNER TO admin;
 
---
--- Name: tag; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.tag (
     tag_id uuid NOT NULL,
@@ -2762,11 +2240,7 @@ CREATE TABLE public.tag (
 );
 
 
-ALTER TABLE public.tag OWNER TO admin;
 
---
--- Name: tag_code; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.tag_code (
     tag_code_id integer NOT NULL,
@@ -2775,11 +2249,7 @@ CREATE TABLE public.tag_code (
 );
 
 
-ALTER TABLE public.tag_code OWNER TO admin;
 
---
--- Name: tag_track; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.tag_track (
     id bigint NOT NULL,
@@ -2789,11 +2259,7 @@ CREATE TABLE public.tag_track (
 );
 
 
-ALTER TABLE public.tag_track OWNER TO admin;
 
---
--- Name: tag_track_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.tag_track_id_seq
     START WITH 1
@@ -2803,18 +2269,11 @@ CREATE SEQUENCE public.tag_track_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.tag_track_id_seq OWNER TO admin;
 
---
--- Name: tag_track_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.tag_track_id_seq OWNED BY public.tag_track.id;
 
 
---
--- Name: tag_type; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.tag_type (
     tag_type_id uuid NOT NULL,
@@ -2822,11 +2281,7 @@ CREATE TABLE public.tag_type (
 );
 
 
-ALTER TABLE public.tag_type OWNER TO admin;
 
---
--- Name: track_org; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.track_org (
     id uuid NOT NULL,
@@ -2862,11 +2317,7 @@ CREATE TABLE public.track_org (
 );
 
 
-ALTER TABLE public.track_org OWNER TO admin;
 
---
--- Name: upload_album; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.upload_album (
     id uuid NOT NULL,
@@ -2891,11 +2342,7 @@ CREATE TABLE public.upload_album (
 );
 
 
-ALTER TABLE public.upload_album OWNER TO admin;
 
---
--- Name: upload_track; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.upload_track (
     id uuid NOT NULL,
@@ -2944,11 +2391,7 @@ CREATE TABLE public.upload_track (
 );
 
 
-ALTER TABLE public.upload_track OWNER TO admin;
 
---
--- Name: upload_album_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.upload_album_search AS
  SELECT ua2.id,
@@ -2983,11 +2426,7 @@ CREATE VIEW public.upload_album_search AS
   WHERE (ua2.session_id <> 0);
 
 
-ALTER TABLE public.upload_album_search OWNER TO admin;
 
---
--- Name: upload_session; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.upload_session (
     id bigint NOT NULL,
@@ -3002,11 +2441,7 @@ CREATE TABLE public.upload_session (
 );
 
 
-ALTER TABLE public.upload_session OWNER TO admin;
 
---
--- Name: upload_session_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.upload_session_id_seq
     START WITH 1
@@ -3016,18 +2451,11 @@ CREATE SEQUENCE public.upload_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.upload_session_id_seq OWNER TO admin;
 
---
--- Name: upload_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.upload_session_id_seq OWNED BY public.upload_session.id;
 
 
---
--- Name: upload_session_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.upload_session_search AS
  SELECT us.id,
@@ -3046,11 +2474,7 @@ CREATE VIEW public.upload_session_search AS
      LEFT JOIN public.org_user c_ou ON ((us.created_by = c_ou.user_id)));
 
 
-ALTER TABLE public.upload_session_search OWNER TO admin;
 
---
--- Name: upload_tracks_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.upload_tracks_search AS
  SELECT ut.id,
@@ -3108,11 +2532,7 @@ CREATE VIEW public.upload_tracks_search AS
   ORDER BY ut.upload_session_id, ut.disc_no, ut."position";
 
 
-ALTER TABLE public.upload_tracks_search OWNER TO admin;
 
---
--- Name: workspace_org; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.workspace_org (
     org_workspace_id uuid NOT NULL,
@@ -3137,11 +2557,7 @@ CREATE TABLE public.workspace_org (
 );
 
 
-ALTER TABLE public.workspace_org OWNER TO admin;
 
---
--- Name: workspace_pause; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.workspace_pause (
     id uuid NOT NULL,
@@ -3152,11 +2568,7 @@ CREATE TABLE public.workspace_pause (
 );
 
 
-ALTER TABLE public.workspace_pause OWNER TO admin;
 
---
--- Name: workspace_search; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.workspace_search AS
  SELECT (w.workspace_id)::text AS id,
@@ -3192,11 +2604,7 @@ CREATE VIEW public.workspace_search AS
      LEFT JOIN public.org_exclude oe ON ((w.workspace_id = oe.ref_id)));
 
 
-ALTER TABLE public.workspace_search OWNER TO admin;
 
---
--- Name: workspace_search_ml_admin; Type: VIEW; Schema: public; Owner: admin
---
 
 CREATE VIEW public.workspace_search_ml_admin AS
  SELECT (w.workspace_id)::text AS id,
@@ -3233,11 +2641,7 @@ CREATE VIEW public.workspace_search_ml_admin AS
   WHERE (wo.org_id IS NOT NULL);
 
 
-ALTER TABLE public.workspace_search_ml_admin OWNER TO admin;
 
---
--- Name: ws_lib_tracks_to_be_synced; Type: TABLE; Schema: public; Owner: admin
---
 
 CREATE TABLE public.ws_lib_tracks_to_be_synced (
     id bigint NOT NULL,
@@ -3256,11 +2660,7 @@ CREATE TABLE public.ws_lib_tracks_to_be_synced (
 );
 
 
-ALTER TABLE public.ws_lib_tracks_to_be_synced OWNER TO admin;
 
---
--- Name: ws_lib_tracks_to_be_synced_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
---
 
 CREATE SEQUENCE public.ws_lib_tracks_to_be_synced_id_seq
     START WITH 1
@@ -3270,18 +2670,11 @@ CREATE SEQUENCE public.ws_lib_tracks_to_be_synced_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ws_lib_tracks_to_be_synced_id_seq OWNER TO admin;
 
---
--- Name: ws_lib_tracks_to_be_synced_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
---
 
 ALTER SEQUENCE public.ws_lib_tracks_to_be_synced_id_seq OWNED BY public.ws_lib_tracks_to_be_synced.id;
 
 
---
--- Name: isrc_tunecode; Type: TABLE; Schema: staging; Owner: admin
---
 
 CREATE TABLE staging.isrc_tunecode (
     tunecode character varying NOT NULL,
@@ -3289,11 +2682,7 @@ CREATE TABLE staging.isrc_tunecode (
 );
 
 
-ALTER TABLE staging.isrc_tunecode OWNER TO admin;
 
---
--- Name: staging_library; Type: TABLE; Schema: staging; Owner: admin
---
 
 CREATE TABLE staging.staging_library (
     library_id uuid NOT NULL,
@@ -3310,11 +2699,7 @@ CREATE TABLE staging.staging_library (
 );
 
 
-ALTER TABLE staging.staging_library OWNER TO admin;
 
---
--- Name: staging_tag_track; Type: TABLE; Schema: staging; Owner: admin
---
 
 CREATE TABLE staging.staging_tag_track (
     id bigint NOT NULL,
@@ -3323,11 +2708,7 @@ CREATE TABLE staging.staging_tag_track (
 );
 
 
-ALTER TABLE staging.staging_tag_track OWNER TO admin;
 
---
--- Name: staging_tag_track_id_seq; Type: SEQUENCE; Schema: staging; Owner: admin
---
 
 CREATE SEQUENCE staging.staging_tag_track_id_seq
     START WITH 1
@@ -3337,18 +2718,11 @@ CREATE SEQUENCE staging.staging_tag_track_id_seq
     CACHE 1;
 
 
-ALTER TABLE staging.staging_tag_track_id_seq OWNER TO admin;
 
---
--- Name: staging_tag_track_id_seq; Type: SEQUENCE OWNED BY; Schema: staging; Owner: admin
---
 
 ALTER SEQUENCE staging.staging_tag_track_id_seq OWNED BY staging.staging_tag_track.id;
 
 
---
--- Name: staging_workspace; Type: TABLE; Schema: staging; Owner: admin
---
 
 CREATE TABLE staging.staging_workspace (
     workspace_id uuid NOT NULL,
@@ -3360,1797 +2734,501 @@ CREATE TABLE staging.staging_workspace (
 );
 
 
-ALTER TABLE staging.staging_workspace OWNER TO admin;
 
---
--- Name: chart_sync_summary id; Type: DEFAULT; Schema: charts; Owner: admin
---
 
 ALTER TABLE ONLY charts.chart_sync_summary ALTER COLUMN id SET DEFAULT nextval('charts.chart_sync_summary_id_seq'::regclass);
 
 
---
--- Name: elastic_track_change id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.elastic_track_change ALTER COLUMN id SET DEFAULT nextval('log.elastic_track_change_id_seq'::regclass);
 
 
---
--- Name: log_album_api_calls id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_api_calls ALTER COLUMN id SET DEFAULT nextval('log.log_album_api_calls_id_seq'::regclass);
 
 
---
--- Name: log_album_api_results id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_api_results ALTER COLUMN id SET DEFAULT nextval('log.log_album_api_results_id_seq'::regclass);
 
 
---
--- Name: log_album_sync_session session_id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_sync_session ALTER COLUMN session_id SET DEFAULT nextval('log.log_album_sync_session_session_id_seq'::regclass);
 
 
---
--- Name: log_elastic_track_changes id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_elastic_track_changes ALTER COLUMN id SET DEFAULT nextval('log.log_elastic_track_changes_id_seq'::regclass);
 
 
---
--- Name: log_library_change libch_id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_library_change ALTER COLUMN libch_id SET DEFAULT nextval('log.log_library_change_libch_id_seq'::regclass);
 
 
---
--- Name: log_prs_search_time id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_prs_search_time ALTER COLUMN id SET DEFAULT nextval('log.log_prs_search_time_id_seq'::regclass);
 
 
---
--- Name: log_sync_time id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_sync_time ALTER COLUMN id SET DEFAULT nextval('log.log_sync_time_id_seq'::regclass);
 
 
---
--- Name: log_track_api_calls id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_api_calls ALTER COLUMN id SET DEFAULT nextval('log.log_track_api_calls_id_seq'::regclass);
 
 
---
--- Name: log_track_index_error id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_index_error ALTER COLUMN id SET DEFAULT nextval('log.log_track_index_error_id_seq'::regclass);
 
 
---
--- Name: log_track_sync_session session_id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_sync_session ALTER COLUMN session_id SET DEFAULT nextval('log.log_track_sync_session_session_id_seq'::regclass);
 
 
---
--- Name: log_user_action id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_user_action ALTER COLUMN id SET DEFAULT nextval('log.log_user_action_id_seq'::regclass);
 
 
---
--- Name: log_workspace_change wsch_id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_workspace_change ALTER COLUMN wsch_id SET DEFAULT nextval('log.log_workspace_change_wsch_id_seq'::regclass);
 
 
---
--- Name: log_ws_lib_change ws_lib_change_id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_ws_lib_change ALTER COLUMN ws_lib_change_id SET DEFAULT nextval('log.ws_lib_change_ws_lib_change_id_seq'::regclass);
 
 
---
--- Name: log_ws_lib_status_change id; Type: DEFAULT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_ws_lib_status_change ALTER COLUMN id SET DEFAULT nextval('log.log_ws_lib_status_change_id_seq'::regclass);
 
 
---
--- Name: playout_response response_id; Type: DEFAULT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_response ALTER COLUMN response_id SET DEFAULT nextval('playout.playout_response_response_id_seq'::regclass);
 
 
---
--- Name: playout_response_status id; Type: DEFAULT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_response_status ALTER COLUMN id SET DEFAULT nextval('playout.playout_response_status_id_seq'::regclass);
 
 
---
--- Name: playout_session id; Type: DEFAULT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_session ALTER COLUMN id SET DEFAULT nextval('playout.playout_session_id_seq'::regclass);
 
 
---
--- Name: playout_session_tracks id; Type: DEFAULT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_session_tracks ALTER COLUMN id SET DEFAULT nextval('playout.playout_session_tracks_id_seq'::regclass);
 
 
---
--- Name: c_tag id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.c_tag ALTER COLUMN id SET DEFAULT nextval('public.c_tag_id_seq'::regclass);
 
 
---
--- Name: c_tag_extended id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.c_tag_extended ALTER COLUMN id SET DEFAULT nextval('public.c_tag_extended_id_seq'::regclass);
 
 
---
--- Name: cleansed_tag_track id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.cleansed_tag_track ALTER COLUMN id SET DEFAULT nextval('public.cleansed_tag_track_id_seq'::regclass);
 
 
---
--- Name: member_label id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.member_label ALTER COLUMN id SET DEFAULT nextval('public.member_label_id_seq'::regclass);
 
 
---
--- Name: org_exclude id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_exclude ALTER COLUMN id SET DEFAULT nextval('public.org_exclude_id_seq'::regclass);
 
 
---
--- Name: org_workspace id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_workspace ALTER COLUMN id SET DEFAULT nextval('public.org_workspace_id_seq'::regclass);
 
 
---
--- Name: playout_session id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.playout_session ALTER COLUMN id SET DEFAULT nextval('public.playout_session_id_seq'::regclass);
 
 
---
--- Name: playout_session_tracks id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.playout_session_tracks ALTER COLUMN id SET DEFAULT nextval('public.playout_session_tracks_id_seq'::regclass);
 
 
---
--- Name: prior_approval_work id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.prior_approval_work ALTER COLUMN id SET DEFAULT nextval('public.prior_approval_work_id_seq'::regclass);
 
 
---
--- Name: sync_info id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.sync_info ALTER COLUMN id SET DEFAULT nextval('public.sync_info_id_seq'::regclass);
 
 
---
--- Name: tag_track id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.tag_track ALTER COLUMN id SET DEFAULT nextval('public.tag_track_id_seq'::regclass);
 
 
---
--- Name: upload_session id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.upload_session ALTER COLUMN id SET DEFAULT nextval('public.upload_session_id_seq'::regclass);
 
 
---
--- Name: ws_lib_tracks_to_be_synced id; Type: DEFAULT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.ws_lib_tracks_to_be_synced ALTER COLUMN id SET DEFAULT nextval('public.ws_lib_tracks_to_be_synced_id_seq'::regclass);
 
 
---
--- Name: staging_tag_track id; Type: DEFAULT; Schema: staging; Owner: admin
---
 
 ALTER TABLE ONLY staging.staging_tag_track ALTER COLUMN id SET DEFAULT nextval('staging.staging_tag_track_id_seq'::regclass);
 
 
---
--- Name: chart_master_albums chart_master_albums_pkey; Type: CONSTRAINT; Schema: charts; Owner: admin
---
 
 ALTER TABLE ONLY charts.chart_master_albums
     ADD CONSTRAINT chart_master_albums_pkey PRIMARY KEY (master_id);
 
 
---
--- Name: chart_master_tracks chart_master_tracks_pkey; Type: CONSTRAINT; Schema: charts; Owner: admin
---
 
 ALTER TABLE ONLY charts.chart_master_tracks
     ADD CONSTRAINT chart_master_tracks_pkey PRIMARY KEY (master_id);
 
 
---
--- Name: chart_sync_summary sync_summary_pkey; Type: CONSTRAINT; Schema: charts; Owner: admin
---
 
 ALTER TABLE ONLY charts.chart_sync_summary
     ADD CONSTRAINT sync_summary_pkey PRIMARY KEY (id);
 
 
---
--- Name: elastic_album_change elastic_album_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.elastic_album_change
     ADD CONSTRAINT elastic_album_change_pkey PRIMARY KEY (document_id);
 
 
---
--- Name: elastic_track_change elastic_track_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.elastic_track_change
     ADD CONSTRAINT elastic_track_change_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_album_api_calls log_album_api_calls_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_api_calls
     ADD CONSTRAINT log_album_api_calls_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_album_api_results log_album_api_results_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_api_results
     ADD CONSTRAINT log_album_api_results_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_album_sync_session log_album_sync_session_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_album_sync_session
     ADD CONSTRAINT log_album_sync_session_pkey PRIMARY KEY (session_id);
 
 
---
--- Name: log_elastic_track_changes log_elastic_track_changes_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_elastic_track_changes
     ADD CONSTRAINT log_elastic_track_changes_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_library_change log_library_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_library_change
     ADD CONSTRAINT log_library_change_pkey PRIMARY KEY (libch_id);
 
 
---
--- Name: log_prs_search_time log_prs_search_time_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_prs_search_time
     ADD CONSTRAINT log_prs_search_time_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_sync_time log_sync_time_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_sync_time
     ADD CONSTRAINT log_sync_time_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_track_api_calls log_track_api_calls_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_api_calls
     ADD CONSTRAINT log_track_api_calls_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_track_api_results_20240301 log_track_api_results_20240301_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_api_results_20240301
     ADD CONSTRAINT log_track_api_results_20240301_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_track_api_results log_track_api_results_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_api_results
     ADD CONSTRAINT log_track_api_results_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_track_index_error log_track_index_error_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_index_error
     ADD CONSTRAINT log_track_index_error_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_track_sync_session log_track_sync_session_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_track_sync_session
     ADD CONSTRAINT log_track_sync_session_pkey PRIMARY KEY (session_id);
 
 
---
--- Name: log_user_action log_user_action_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_user_action
     ADD CONSTRAINT log_user_action_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_workspace_change log_workspace_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_workspace_change
     ADD CONSTRAINT log_workspace_change_pkey PRIMARY KEY (wsch_id);
 
 
---
--- Name: log_ws_lib_status_change log_ws_lib_status_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_ws_lib_status_change
     ADD CONSTRAINT log_ws_lib_status_change_pkey PRIMARY KEY (id);
 
 
---
--- Name: log_ws_lib_change ws_lib_change_pkey; Type: CONSTRAINT; Schema: log; Owner: admin
---
 
 ALTER TABLE ONLY log.log_ws_lib_change
     ADD CONSTRAINT ws_lib_change_pkey PRIMARY KEY (ws_lib_change_id);
 
 
---
--- Name: playout_response playout_response_pkey; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_response
     ADD CONSTRAINT playout_response_pkey PRIMARY KEY (response_id);
 
 
---
--- Name: playout_response_status playout_response_status_pk; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_response_status
     ADD CONSTRAINT playout_response_status_pk PRIMARY KEY (id);
 
 
---
--- Name: playout_session playout_session_pkey; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_session
     ADD CONSTRAINT playout_session_pkey PRIMARY KEY (id);
 
 
---
--- Name: playout_session_tracks playout_session_tracks_pkey; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.playout_session_tracks
     ADD CONSTRAINT playout_session_tracks_pkey PRIMARY KEY (id);
 
 
---
--- Name: radio_categories radio_categories_pk; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.radio_categories
     ADD CONSTRAINT radio_categories_pk PRIMARY KEY (category_id);
 
 
---
--- Name: radio_stations radio_stations_pkey; Type: CONSTRAINT; Schema: playout; Owner: admin
---
 
 ALTER TABLE ONLY playout.radio_stations
     ADD CONSTRAINT radio_stations_pkey PRIMARY KEY (id);
 
 
---
--- Name: album_org album_org_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.album_org
     ADD CONSTRAINT album_org_pkey PRIMARY KEY (original_album_id, org_id);
 
 
---
--- Name: c_tag_extended c_tag_extended_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.c_tag_extended
     ADD CONSTRAINT c_tag_extended_pkey PRIMARY KEY (id);
 
 
---
--- Name: c_tag_index_status c_tag_index_status_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.c_tag_index_status
     ADD CONSTRAINT c_tag_index_status_pkey PRIMARY KEY (type);
 
 
---
--- Name: c_tag c_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.c_tag
     ADD CONSTRAINT c_tag_pkey PRIMARY KEY (id);
 
 
---
--- Name: cleansed_tag_track cleansed_tag_track_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.cleansed_tag_track
     ADD CONSTRAINT cleansed_tag_track_pkey PRIMARY KEY (id);
 
 
---
--- Name: library_org library_org_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.library_org
     ADD CONSTRAINT library_org_pkey PRIMARY KEY (org_library_id);
 
 
---
--- Name: library library_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.library
     ADD CONSTRAINT library_pkey PRIMARY KEY (library_id);
 
 
---
--- Name: member_label member_label_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.member_label
     ADD CONSTRAINT member_label_pkey PRIMARY KEY (id);
 
 
---
--- Name: ml_master_album ml_master_album_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.ml_master_album
     ADD CONSTRAINT ml_master_album_pkey PRIMARY KEY (album_id);
 
 
---
--- Name: ml_master_track ml_master_track_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.ml_master_track
     ADD CONSTRAINT ml_master_track_pkey PRIMARY KEY (track_id);
 
 
---
--- Name: org_exclude org_exclude_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_exclude
     ADD CONSTRAINT org_exclude_pkey PRIMARY KEY (id);
 
 
---
--- Name: org_track_version org_track_version_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_track_version
     ADD CONSTRAINT org_track_version_pkey PRIMARY KEY (ml_version_id);
 
 
---
--- Name: org_user org_user_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_user
     ADD CONSTRAINT org_user_pkey PRIMARY KEY (user_id);
 
 
---
--- Name: org_workspace org_workspace_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.org_workspace
     ADD CONSTRAINT org_workspace_pkey PRIMARY KEY (id);
 
 
---
--- Name: playout_session playout_session_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.playout_session
     ADD CONSTRAINT playout_session_pkey PRIMARY KEY (id);
 
 
---
--- Name: playout_session_tracks playout_session_tracks_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.playout_session_tracks
     ADD CONSTRAINT playout_session_tracks_pkey PRIMARY KEY (id);
 
 
---
--- Name: prior_approval_work prior_approval_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.prior_approval_work
     ADD CONSTRAINT prior_approval_pkey PRIMARY KEY (id);
 
 
---
--- Name: radio_stations radio_stations_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.radio_stations
     ADD CONSTRAINT radio_stations_pkey PRIMARY KEY (id);
 
 
---
--- Name: sync_info sync_info_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.sync_info
     ADD CONSTRAINT sync_info_pkey PRIMARY KEY (id);
 
 
---
--- Name: sync_status sync_status_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.sync_status
     ADD CONSTRAINT sync_status_pkey PRIMARY KEY (status_code);
 
 
---
--- Name: tag_code tag_code_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.tag_code
     ADD CONSTRAINT tag_code_pkey PRIMARY KEY (tag_code_id);
 
 
---
--- Name: tag tag_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.tag
     ADD CONSTRAINT tag_pkey PRIMARY KEY (tag_id);
 
 
---
--- Name: tag_track tag_track_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.tag_track
     ADD CONSTRAINT tag_track_pkey PRIMARY KEY (id);
 
 
---
--- Name: tag_type tag_type_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.tag_type
     ADD CONSTRAINT tag_type_pkey PRIMARY KEY (tag_type_id);
 
 
---
--- Name: track_org track_org_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.track_org
     ADD CONSTRAINT track_org_pkey PRIMARY KEY (original_track_id, org_id);
 
 
---
--- Name: upload_album upload_album_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.upload_album
     ADD CONSTRAINT upload_album_pkey PRIMARY KEY (id);
 
 
---
--- Name: upload_session upload_session_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.upload_session
     ADD CONSTRAINT upload_session_pkey PRIMARY KEY (id);
 
 
---
--- Name: upload_track upload_track_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.upload_track
     ADD CONSTRAINT upload_track_pkey PRIMARY KEY (id);
 
 
---
--- Name: workspace_org workspace_org_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.workspace_org
     ADD CONSTRAINT workspace_org_pkey PRIMARY KEY (org_workspace_id);
 
 
---
--- Name: workspace_pause workspace_pause_pk; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.workspace_pause
     ADD CONSTRAINT workspace_pause_pk PRIMARY KEY (id);
 
 
---
--- Name: workspace workspace_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.workspace
     ADD CONSTRAINT workspace_pkey PRIMARY KEY (workspace_id);
 
 
---
--- Name: ws_lib_tracks_to_be_synced ws_lib_tracks_to_be_synced_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
---
 
 ALTER TABLE ONLY public.ws_lib_tracks_to_be_synced
     ADD CONSTRAINT ws_lib_tracks_to_be_synced_pkey PRIMARY KEY (id);
 
 
---
--- Name: staging_library library_pkey; Type: CONSTRAINT; Schema: staging; Owner: admin
---
 
 ALTER TABLE ONLY staging.staging_library
     ADD CONSTRAINT library_pkey PRIMARY KEY (library_id);
 
 
---
--- Name: staging_tag_track staging_tag_track_pkey; Type: CONSTRAINT; Schema: staging; Owner: admin
---
 
 ALTER TABLE ONLY staging.staging_tag_track
     ADD CONSTRAINT staging_tag_track_pkey PRIMARY KEY (id);
 
 
---
--- Name: staging_workspace workspace_pkey; Type: CONSTRAINT; Schema: staging; Owner: admin
---
 
 ALTER TABLE ONLY staging.staging_workspace
     ADD CONSTRAINT workspace_pkey PRIMARY KEY (workspace_id);
 
 
---
--- Name: idx_org_workspace_id; Type: INDEX; Schema: log; Owner: admin
---
 
 CREATE INDEX idx_org_workspace_id ON log.elastic_track_change USING btree (org_workspace_id);
 
 
---
--- Name: idx_original_track_id_org_id; Type: INDEX; Schema: log; Owner: admin
---
 
 CREATE INDEX idx_original_track_id_org_id ON log.elastic_track_change USING btree (original_track_id, org_id);
 
-
---
--- Name: idx_album_id; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX idx_album_id ON public.track_org USING btree (album_id);
-
-
---
--- Name: idx_member_label; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX idx_member_label ON public.member_label USING btree (member, label);
 
-
---
--- Name: idx_org_workspace_id; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX idx_org_workspace_id ON public.track_org USING btree (org_workspace_id);
-
-
---
--- Name: idx_original_album_id; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX idx_original_album_id ON public.album_org USING btree (original_album_id);
 
-
---
--- Name: idx_original_track_id; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX idx_original_track_id ON public.track_org USING btree (original_track_id);
-
-
---
--- Name: idx_upload_id; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX idx_upload_id ON public.upload_track USING btree (session_id);
 
-
---
--- Name: idx_workspace_id; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX idx_workspace_id ON public.workspace_org USING btree (workspace_id);
-
-
---
--- Name: library_ws_idx; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX library_ws_idx ON public.library USING btree (workspace_id);
 
-
---
--- Name: ml_master_album_id_idx; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE UNIQUE INDEX ml_master_album_id_idx ON public.ml_master_album USING btree (album_id);
-
-
---
--- Name: ml_master_album_workspace_id_library_id_api_result_id; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX ml_master_album_workspace_id_library_id_api_result_id ON public.ml_master_album USING btree (workspace_id, library_id, api_result_id);
 
-
---
--- Name: ml_master_track_album_id_idx; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX ml_master_track_album_id_idx ON public.ml_master_track USING btree (album_id);
-
-
---
--- Name: ml_master_track_deleted; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX ml_master_track_deleted ON public.ml_master_track USING btree (deleted);
 
-
---
--- Name: ml_master_track_id_idx; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE UNIQUE INDEX ml_master_track_id_idx ON public.ml_master_track USING btree (track_id);
-
-
---
--- Name: ml_master_track_library_id_idx; Type: INDEX; Schema: public; Owner: admin
---
 
 CREATE INDEX ml_master_track_library_id_idx ON public.ml_master_track USING btree (library_id);
 
-
---
--- Name: ml_master_track_workspace_id_api_result_id; Type: INDEX; Schema: public; Owner: admin
---
-
 CREATE INDEX ml_master_track_workspace_id_api_result_id ON public.ml_master_track USING btree (workspace_id, api_result_id);
-
-
---
--- Name: log_album_api_results tr_sync_albums; Type: TRIGGER; Schema: log; Owner: admin
---
 
 CREATE TRIGGER tr_sync_albums AFTER INSERT ON log.log_album_api_results FOR EACH ROW EXECUTE FUNCTION public.fn_trigger_sync_album();
 
-
---
--- Name: log_track_api_results tr_sync_tracks; Type: TRIGGER; Schema: log; Owner: admin
---
-
 CREATE TRIGGER tr_sync_tracks AFTER INSERT ON log.log_track_api_results FOR EACH ROW EXECUTE FUNCTION public.fn_trigger_sync_track();
-
-
---
--- Name: log_track_api_results_20240301 tr_sync_tracks; Type: TRIGGER; Schema: log; Owner: admin
---
 
 CREATE TRIGGER tr_sync_tracks AFTER INSERT ON log.log_track_api_results_20240301 FOR EACH ROW EXECUTE FUNCTION public.fn_trigger_sync_track();
 
-
---
--- Name: ml_master_track tr_update_album; Type: TRIGGER; Schema: public; Owner: admin
---
-
 CREATE TRIGGER tr_update_album AFTER INSERT OR UPDATE ON public.ml_master_track FOR EACH ROW EXECUTE FUNCTION public.fn_update_album();
-
-
---
--- Name: album_org tr_update_elastic_album_change; Type: TRIGGER; Schema: public; Owner: admin
---
 
 CREATE TRIGGER tr_update_elastic_album_change AFTER INSERT OR UPDATE ON public.album_org FOR EACH ROW EXECUTE FUNCTION public.fn_update_elastic_album_change();
 
-
---
--- Name: track_org tr_update_elastic_track_change; Type: TRIGGER; Schema: public; Owner: admin
---
-
 CREATE TRIGGER tr_update_elastic_track_change AFTER INSERT OR UPDATE ON public.track_org FOR EACH ROW EXECUTE FUNCTION public.fn_update_elastic_track_change();
 
-
---
--- Name: SCHEMA charts; Type: ACL; Schema: -; Owner: admin
---
-
-GRANT ALL ON SCHEMA charts TO admin;
-
-
---
--- Name: SCHEMA log; Type: ACL; Schema: -; Owner: admin
---
-
-GRANT ALL ON SCHEMA log TO admin;
-
-
---
--- Name: SCHEMA playout; Type: ACL; Schema: -; Owner: admin
---
-
-GRANT ALL ON SCHEMA playout TO admin;
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA public TO admin;
-
-
---
--- Name: SCHEMA staging; Type: ACL; Schema: -; Owner: admin
---
-
-GRANT ALL ON SCHEMA staging TO admin;
-
-
---
--- Name: FUNCTION fn_search_elastic_album_changes(pagesize integer, orgworkspaceid uuid); Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON FUNCTION log.fn_search_elastic_album_changes(pagesize integer, orgworkspaceid uuid) TO admin;
-
-
---
--- Name: FUNCTION fn_search_elastic_track_changes(pageno integer, pagesize integer, orgworkspaceid uuid); Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON FUNCTION log.fn_search_elastic_track_changes(pageno integer, pagesize integer, orgworkspaceid uuid) TO admin;
-
-
---
--- Name: FUNCTION fn_lib_change_trigger(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_lib_change_trigger() TO admin;
-
-
---
--- Name: FUNCTION fn_sync_track(OUT status integer); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_sync_track(OUT status integer) TO admin;
-
-
---
--- Name: FUNCTION fn_trigger_sync_album(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_trigger_sync_album() TO admin;
-
-
---
--- Name: FUNCTION fn_trigger_sync_track(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_trigger_sync_track() TO admin;
-
-
---
--- Name: FUNCTION fn_update_album(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_update_album() TO admin;
-
-
---
--- Name: FUNCTION fn_update_elastic_album_change(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_update_elastic_album_change() TO admin;
-
-
---
--- Name: FUNCTION fn_update_elastic_track_change(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_update_elastic_track_change() TO admin;
-
-
---
--- Name: FUNCTION fn_update_tag(_tag_type_id uuid, _track_id uuid, _tag_list character varying); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_update_tag(_tag_type_id uuid, _track_id uuid, _tag_list character varying) TO admin;
-
-
---
--- Name: FUNCTION fn_ws_change_trigger(); Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON FUNCTION public.fn_ws_change_trigger() TO admin;
-
-
---
--- Name: TABLE chart_master_albums; Type: ACL; Schema: charts; Owner: admin
---
-
-GRANT ALL ON TABLE charts.chart_master_albums TO admin;
-
-
---
--- Name: TABLE chart_master_tracks; Type: ACL; Schema: charts; Owner: admin
---
-
-GRANT ALL ON TABLE charts.chart_master_tracks TO admin;
-
-
---
--- Name: TABLE chart_sync_summary; Type: ACL; Schema: charts; Owner: admin
---
-
-GRANT ALL ON TABLE charts.chart_sync_summary TO admin;
-
-
---
--- Name: SEQUENCE chart_sync_summary_id_seq; Type: ACL; Schema: charts; Owner: admin
---
-
-GRANT ALL ON SEQUENCE charts.chart_sync_summary_id_seq TO admin;
-
-
---
--- Name: TABLE elastic_album_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.elastic_album_change TO admin;
-
-
---
--- Name: TABLE elastic_track_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.elastic_track_change TO admin;
-
-
---
--- Name: SEQUENCE elastic_track_change_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.elastic_track_change_id_seq TO admin;
-
-
---
--- Name: TABLE log_album_api_calls; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_album_api_calls TO admin;
-
-
---
--- Name: SEQUENCE log_album_api_calls_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_album_api_calls_id_seq TO admin;
-
-
---
--- Name: TABLE log_album_api_results; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_album_api_results TO admin;
-
-
---
--- Name: SEQUENCE log_album_api_results_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_album_api_results_id_seq TO admin;
-
-
---
--- Name: TABLE log_album_sync_session; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_album_sync_session TO admin;
-
-
---
--- Name: SEQUENCE log_album_sync_session_session_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_album_sync_session_session_id_seq TO admin;
-
-
---
--- Name: TABLE log_elastic_track_changes; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_elastic_track_changes TO admin;
-
-
---
--- Name: SEQUENCE log_elastic_track_changes_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_elastic_track_changes_id_seq TO admin;
-
-
---
--- Name: TABLE log_library_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_library_change TO admin;
-
-
---
--- Name: SEQUENCE log_library_change_libch_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_library_change_libch_id_seq TO admin;
-
-
---
--- Name: TABLE log_prs_search_time; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_prs_search_time TO admin;
-
-
---
--- Name: SEQUENCE log_prs_search_time_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_prs_search_time_id_seq TO admin;
-
-
---
--- Name: TABLE log_sync_time; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_sync_time TO admin;
-
-
---
--- Name: SEQUENCE log_sync_time_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_sync_time_id_seq TO admin;
-
-
---
--- Name: TABLE log_track_api_calls; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_track_api_calls TO admin;
-
-
---
--- Name: SEQUENCE log_track_api_calls_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_track_api_calls_id_seq TO admin;
-
-
---
--- Name: TABLE log_track_api_results_20240301; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_track_api_results_20240301 TO admin;
-
-
---
--- Name: SEQUENCE log_track_api_results_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_track_api_results_id_seq TO admin;
-
-
---
--- Name: TABLE log_track_api_results; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_track_api_results TO admin;
-
-
---
--- Name: TABLE log_track_index_error; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_track_index_error TO admin;
-
-
---
--- Name: SEQUENCE log_track_index_error_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_track_index_error_id_seq TO admin;
-
-
---
--- Name: TABLE log_track_sync_session; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_track_sync_session TO admin;
-
-
---
--- Name: SEQUENCE log_track_sync_session_session_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_track_sync_session_session_id_seq TO admin;
-
-
---
--- Name: TABLE log_user_action; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_user_action TO admin;
-
-
---
--- Name: SEQUENCE log_user_action_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_user_action_id_seq TO admin;
-
-
---
--- Name: TABLE log_workspace_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_workspace_change TO admin;
-
-
---
--- Name: SEQUENCE log_workspace_change_wsch_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_workspace_change_wsch_id_seq TO admin;
-
-
---
--- Name: TABLE log_ws_lib_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_ws_lib_change TO admin;
-
-
---
--- Name: TABLE log_ws_lib_status_change; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON TABLE log.log_ws_lib_status_change TO admin;
-
-
---
--- Name: SEQUENCE log_ws_lib_status_change_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.log_ws_lib_status_change_id_seq TO admin;
-
-
---
--- Name: SEQUENCE ws_lib_change_ws_lib_change_id_seq; Type: ACL; Schema: log; Owner: admin
---
-
-GRANT ALL ON SEQUENCE log.ws_lib_change_ws_lib_change_id_seq TO admin;
-
-
---
--- Name: TABLE playout_response; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.playout_response TO admin;
-
-
---
--- Name: SEQUENCE playout_response_response_id_seq; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON SEQUENCE playout.playout_response_response_id_seq TO admin;
-
-
---
--- Name: TABLE playout_response_status; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.playout_response_status TO admin;
-
-
---
--- Name: SEQUENCE playout_response_status_id_seq; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON SEQUENCE playout.playout_response_status_id_seq TO admin;
-
-
---
--- Name: TABLE playout_session; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.playout_session TO admin;
-
-
---
--- Name: SEQUENCE playout_session_id_seq; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON SEQUENCE playout.playout_session_id_seq TO admin;
-
-
---
--- Name: TABLE radio_stations; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.radio_stations TO admin;
-
-
---
--- Name: TABLE org_user; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.org_user TO admin;
-
-
---
--- Name: TABLE playout_session_search; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.playout_session_search TO admin;
-
-
---
--- Name: TABLE playout_session_tracks; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.playout_session_tracks TO admin;
-
-
---
--- Name: SEQUENCE playout_session_tracks_id_seq; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON SEQUENCE playout.playout_session_tracks_id_seq TO admin;
-
-
---
--- Name: TABLE radio_categories; Type: ACL; Schema: playout; Owner: admin
---
-
-GRANT ALL ON TABLE playout.radio_categories TO admin;
-
-
---
--- Name: TABLE album_org; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.album_org TO admin;
-
-
---
--- Name: TABLE c_tag; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.c_tag TO admin;
-
-
---
--- Name: TABLE c_tag_extended; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.c_tag_extended TO admin;
-
-
---
--- Name: SEQUENCE c_tag_extended_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.c_tag_extended_id_seq TO admin;
-
-
---
--- Name: SEQUENCE c_tag_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.c_tag_id_seq TO admin;
-
-
---
--- Name: TABLE c_tag_index_status; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.c_tag_index_status TO admin;
-
-
---
--- Name: TABLE cleansed_tag_track; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.cleansed_tag_track TO admin;
-
-
---
--- Name: SEQUENCE cleansed_tag_track_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.cleansed_tag_track_id_seq TO admin;
-
-
---
--- Name: TABLE ctag_extended_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ctag_extended_search TO admin;
-
-
---
--- Name: TABLE ctag_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ctag_search TO admin;
-
-
---
--- Name: TABLE dh_status; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.dh_status TO admin;
-
-
---
--- Name: TABLE library; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.library TO admin;
-
-
---
--- Name: TABLE library_org; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.library_org TO admin;
-
-
---
--- Name: TABLE workspace; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.workspace TO admin;
-
-
---
--- Name: TABLE library_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.library_search TO admin;
-
-
---
--- Name: TABLE library_search_ml_admin; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.library_search_ml_admin TO admin;
-
-
---
--- Name: TABLE member_label; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.member_label TO admin;
-
-
---
--- Name: SEQUENCE member_label_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.member_label_id_seq TO admin;
-
-
---
--- Name: TABLE ml_master_album; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ml_master_album TO admin;
-
-
---
--- Name: TABLE ml_master_track; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ml_master_track TO admin;
-
-
---
--- Name: TABLE ml_status; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ml_status TO admin;
-
-
---
--- Name: TABLE org_exclude; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.org_exclude TO admin;
-
-
---
--- Name: SEQUENCE org_exclude_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.org_exclude_id_seq TO admin;
-
-
---
--- Name: TABLE org_track_version; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.org_track_version TO admin;
-
---
--- Name: TABLE org_workspace; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.org_workspace TO admin;
-
-
---
--- Name: SEQUENCE org_workspace_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.org_workspace_id_seq TO admin;
-
-
---
--- Name: TABLE playout_session; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.playout_session TO admin;
-
-
---
--- Name: SEQUENCE playout_session_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.playout_session_id_seq TO admin;
-
-
---
--- Name: TABLE playout_session_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.playout_session_search TO admin;
-
-
---
--- Name: TABLE playout_session_tracks; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.playout_session_tracks TO admin;
-
-
---
--- Name: SEQUENCE playout_session_tracks_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.playout_session_tracks_id_seq TO admin;
-
-
---
--- Name: TABLE playout_tracks_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.playout_tracks_search TO admin;
-
-
---
--- Name: TABLE ppl_label_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ppl_label_search TO admin;
-
-
---
--- Name: TABLE prior_approval_work; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.prior_approval_work TO admin;
-
-
---
--- Name: SEQUENCE prior_approval_work_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.prior_approval_work_id_seq TO admin;
-
-
---
--- Name: TABLE radio_stations; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.radio_stations TO admin;
-
-
---
--- Name: TABLE sync_info; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.sync_info TO admin;
-
-
---
--- Name: SEQUENCE sync_info_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.sync_info_id_seq TO admin;
-
-
---
--- Name: TABLE sync_status; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.sync_status TO admin;
-
-
---
--- Name: TABLE tag; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.tag TO admin;
-
-
---
--- Name: TABLE tag_code; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.tag_code TO admin;
-
-
---
--- Name: TABLE tag_track; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.tag_track TO admin;
-
-
---
--- Name: SEQUENCE tag_track_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.tag_track_id_seq TO admin;
-
-
---
--- Name: TABLE tag_type; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.tag_type TO admin;
-
-
---
--- Name: TABLE track_org; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.track_org TO admin;
-
---
--- Name: TABLE upload_album; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_album TO admin;
-
---
--- Name: TABLE upload_track; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_track TO admin;
-
-
---
--- Name: TABLE upload_album_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_album_search TO admin;
-
-
---
--- Name: TABLE upload_session; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_session TO admin;
-
-
---
--- Name: SEQUENCE upload_session_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.upload_session_id_seq TO admin;
-
-
---
--- Name: TABLE upload_session_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_session_search TO admin;
-
-
---
--- Name: TABLE upload_tracks_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.upload_tracks_search TO admin;
-
-
---
--- Name: TABLE workspace_org; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.workspace_org TO admin;
-
-
---
--- Name: TABLE workspace_pause; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.workspace_pause TO admin;
-
-
---
--- Name: TABLE workspace_search; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.workspace_search TO admin;
-
-
---
--- Name: TABLE ws_lib_tracks_to_be_synced; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON TABLE public.ws_lib_tracks_to_be_synced TO admin;
-
-
---
--- Name: SEQUENCE ws_lib_tracks_to_be_synced_id_seq; Type: ACL; Schema: public; Owner: admin
---
-
-GRANT ALL ON SEQUENCE public.ws_lib_tracks_to_be_synced_id_seq TO admin;
-
-
---
--- Name: TABLE isrc_tunecode; Type: ACL; Schema: staging; Owner: admin
---
-
-GRANT ALL ON TABLE staging.isrc_tunecode TO admin;
-
-
---
--- Name: TABLE staging_library; Type: ACL; Schema: staging; Owner: admin
---
-
-GRANT ALL ON TABLE staging.staging_library TO admin;
-
-
---
--- Name: TABLE staging_tag_track; Type: ACL; Schema: staging; Owner: admin
---
-
-GRANT ALL ON TABLE staging.staging_tag_track TO admin;
-
-
---
--- Name: SEQUENCE staging_tag_track_id_seq; Type: ACL; Schema: staging; Owner: admin
---
-
-GRANT ALL ON SEQUENCE staging.staging_tag_track_id_seq TO admin;
-
-
---
--- Name: TABLE staging_workspace; Type: ACL; Schema: staging; Owner: admin
---
-
-GRANT ALL ON TABLE staging.staging_workspace TO admin;
-
-
---
 -- PostgreSQL database dump complete
---
 
